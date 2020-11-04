@@ -33,14 +33,23 @@ class LongPoem {
   }
   load() {
     const loader = PIXI.Loader.shared;
-    loader.add('static/things_02.json').load(this.setup.bind(this))
+    loader
+      .add('static/things_02.json')
+      .add('static/tengman01.json')
+      .add('static/tengman02.json')
+      .add('static/first_person.json')
+      .load(this.setup.bind(this))
   }
   setup(loader) {
     let things02 = loader.resources['static/things_02.json'].textures;
     let tree = things02['first_tree.png'];
+    let people2 = things02['people2.png'];
     let t2 = PIXI.Sprite.from(tree);
-    this.app.stage.addChild(t2)
+    let p2 = PIXI.Sprite.from(people2);
+    p2.y = 450;
+    this.app.stage.addChild(t2, p2);
 
+    // 红色黑的的点
     var u = new PIXI.Container;
     for (var n = 0; n < 9; n++) {
       var m = new PIXI.Container,
@@ -68,6 +77,26 @@ class LongPoem {
       }, 300),
       u.position.set(180, 395),
       this.app.stage.addChild(u);
+
+    // 藤蔓一
+    var a = [];
+    for (var n = 0; n < 60; n++) {
+      n < 30 ? a.push(loader.resources['static/tengman01.json'].textures["tengman_000" + n + ".png"]) : a.push(loader.resources['static/tengman02.json'].textures["tengman_000" + n + ".png"]);
+    }
+    var i = new PIXI.AnimatedSprite(a);
+    i.animationSpeed = .4;
+    i.play();
+    this.app.stage.addChild(i);
+
+    var s = [];
+    for (var n = 0; n < 76; n++) {
+      s.push(loader.resources['static/first_person.json'].textures["a_000" + n + ".png"]);
+    }
+    var r = new PIXI.AnimatedSprite(s);
+    r.position.set(420, 58)
+    r.animationSpeed = .4
+    r.play();
+    this.app.stage.addChild(r);
   }
 }
 
