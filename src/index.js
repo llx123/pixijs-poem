@@ -1,5 +1,9 @@
 import * as PIXI from 'pixi.js';
-
+import {
+  TweenMax,
+  TimelineMax
+} from 'gsap';
+import PhyTouch from 'phy-touch';
 
 class LongPoem {
   constructor(options) {
@@ -38,6 +42,7 @@ class LongPoem {
       .add('static/tengman01.json')
       .add('static/tengman02.json')
       .add('static/first_person.json')
+      .add('static/q1_person_0.json')
       .load(this.setup.bind(this))
   }
   setup(loader) {
@@ -87,17 +92,59 @@ class LongPoem {
     i.animationSpeed = .4;
     i.play();
     this.app.stage.addChild(i);
-
+    // 少女荡秋千
     var s = [];
     for (var n = 0; n < 76; n++) {
-      s.push(loader.resources['static/first_person.json'].textures["a_000" + n + ".png"]);
+      s.push(loader.resources['static/first_person.json'].textures[`a_000${n}.png`]);
     }
     var r = new PIXI.AnimatedSprite(s);
     r.position.set(420, 58)
     r.animationSpeed = .4
     r.play();
     this.app.stage.addChild(r);
+
+    // 旋涡
+    var x = [];
+    for (var i = 5; i < 40; i++) {
+      let n = i < 10 ? `0${i}` : i;
+      x.push(loader.resources['static/q1_person_0.json'].textures[`a_000${n}.png`])
+    }
+    this.app.stage.addChild(PIXI.Sprite.from(x));
+    this.timeline = new TimelineMax({
+      paused: true
+    });
+    let timeline1 = new TimelineMax({
+      delay: 0.3
+    });
+    let tweenMax1 = new TweenMax(x, 0.1, {});
+    timeline1.add(tweenMax1, 1);
+    this.timeline.add(timeline1, 0);
+    this.initTouch();
   }
+  initTouch() {
+    new PhyTouch({
+      touch: "#app", //反馈触摸的dom
+      vertical: true, //不必需，默认是true代表监听竖直方向touch
+      target: {
+        y: 0
+      }, //运动的对象
+      property: "y", //被运动的属性
+      min: -2000, //不必需,运动属性的最小值
+      max: 0, //不必需,滚动属性的最大值
+      sensitivity: 1, //不必需,触摸区域的灵敏度，默认值为1，可以为负数
+      factor: 1, //不必需,表示触摸位移运动位移与被运动属性映射关系，默认值是1
+      moveFactor: 1, //不必需,表示touchmove位移与被运动属性映射关系，默认值是1
+      step: 45, //用于校正到step的整数倍
+      bindSelf: false,
+      maxSpeed: 2, //不必需，触摸反馈的最大速度限制 
+      value: 0,
+      change: (value) => {
+        console.log(-value / 2000);
+        this.timeline.seek(-value / 2000)
+      }
+    })
+  }
+
 }
 
 new LongPoem({});
