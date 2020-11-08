@@ -43,6 +43,8 @@ class LongPoem {
       .add('static/tengman02.json')
       .add('static/first_person.json')
       .add('static/q1_person_0.json')
+      .add('static/q1_person_1.json')
+      .add('static/q1_2.json')
       .load(this.setup.bind(this))
   }
   setup(loader) {
@@ -103,23 +105,43 @@ class LongPoem {
     r.play();
     this.app.stage.addChild(r);
 
-    // 旋涡
-    var x = [];
-    for (var i = 5; i < 40; i++) {
+    // 人物一动画
+    this.x = [];
+    for (var i = 5; i < 72; i++) {
       let n = i < 10 ? `0${i}` : i;
-      x.push(loader.resources['static/q1_person_0.json'].textures[`a_000${n}.png`])
+      if (i < 40) {
+        this.x.push(loader.resources['static/q1_person_0.json'].textures[`a_000${n}.png`])
+      } else {
+        this.x.push(loader.resources['static/q1_person_1.json'].textures[`a_000${n}.png`])
+      }
     }
-    this.app.stage.addChild(PIXI.Sprite.from(x));
-    this.timeline = new TimelineMax({
-      paused: true
-    });
-    let timeline1 = new TimelineMax({
-      delay: 0.3
-    });
-    let tweenMax1 = new TweenMax(x, 0.1, {});
-    timeline1.add(tweenMax1, 1);
-    this.timeline.add(timeline1, 0);
+    this.X = PIXI.Sprite.from(loader.resources['static/q1_2.json'].textures["q1_tengman_0.png"]);
+    this.X.y = 90;
+    this.S = PIXI.Sprite.from(loader.resources['static/q1_2.json'].textures["q1_tengman_1.png"]);
+    this.S.y = 90;
+    this.S.visible = !1;
+    this.X.visible = !1;
+    let nc = this.nc = PIXI.Sprite.from(this.x[0]);
+    nc.y = 99;
+    this.app.stage.addChild(nc, this.X, this.S);
+
     this.initTouch();
+  }
+  change() {
+    let X = this.X;
+    let S = this.S;
+    35 < this.currentFrame && this.currentFrame <= 51 ? (X.visible = !0,
+      S.visible = !1) : 51 < this.currentFrame ? (X.visible = !1,
+      S.visible = !0) : (S.visible = !1,
+      X.visible = !1)
+  }
+  play(progress) {
+    let index = this.currentFrame = Math.floor(progress * 5 * 34);
+    console.log(index, progress)
+    if (index >= 0 && index < 67) {
+      this.change()
+      this.nc.texture = PIXI.Sprite.from(this.x[index]).texture;
+    }
   }
   initTouch() {
     new PhyTouch({
@@ -139,8 +161,8 @@ class LongPoem {
       maxSpeed: 2, //不必需，触摸反馈的最大速度限制 
       value: 0,
       change: (value) => {
-        console.log(-value / 2000);
-        this.timeline.seek(-value / 2000)
+        let progress = -value / 2000;
+        this.play(progress);
       }
     })
   }
