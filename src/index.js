@@ -49,15 +49,21 @@ class LongPoem {
   }
   setup(loader) {
     let things02 = loader.resources['static/things_02.json'].textures;
-    let tree = things02['first_tree.png'];
-    let people2 = things02['people2.png'];
-    let t2 = PIXI.Sprite.from(tree);
-    let p2 = PIXI.Sprite.from(people2);
-    p2.y = 450;
-    this.app.stage.addChild(t2, p2);
+    let tree = PIXI.Sprite.from(things02['first_tree.png']);
+    let people2 = PIXI.Sprite.from(things02['people2.png']);
+    people2.y = 450;
+    this.app.stage.addChild(people2, tree);
 
+    let firstContainer = new PIXI.Container();
+    firstContainer.x = 245;
+    firstContainer.y = 222;
+    var title = PIXI.Sprite.from(things02["first_title.png"]);
+    title.y = 54;
+    var logo = PIXI.Sprite.from(things02["first_logo.png"]),
+      text = PIXI.Sprite.from(things02["first_text.png"]);
+    text.y = 594;
     // 红色黑的的点
-    var u = new PIXI.Container;
+    var points = new PIXI.Container;
     for (var n = 0; n < 9; n++) {
       var m = new PIXI.Container,
         v = m.blackDot = PIXI.Sprite.from(things02["black_dot.png"]),
@@ -66,25 +72,39 @@ class LongPoem {
         m.x = n % 3 * 78,
         m.y = 78 * parseInt(n / 3),
         m.addChild(v, h),
-        u.addChild(m)
+        points.addChild(m)
     }
-    u.children[0].blackDot.visible = !1,
-      u.children[0].redDot.visible = !0;
+    points.children[0].blackDot.visible = !1,
+      points.children[0].redDot.visible = !0;
     var g = 0,
       x = 0;
     setInterval(function () {
-        u.children[g].blackDot.visible = !0,
-          u.children[g].redDot.visible = !1,
+        points.children[g].blackDot.visible = !0,
+          points.children[g].redDot.visible = !1,
           x = g,
           g = parseInt(9 * Math.random()),
           x == g && (g = parseInt(9 * Math.random()),
             x = g),
-          u.children[g].blackDot.visible = !1,
-          u.children[g].redDot.visible = !0
+          points.children[g].blackDot.visible = !1,
+          points.children[g].redDot.visible = !0
       }, 300),
-      u.position.set(180, 395),
-      this.app.stage.addChild(u);
+      points.position.set(180, 395),
+      firstContainer.addChild(points, title, text, logo);
+    this.app.stage.addChild(firstContainer);
 
+    // 第一屏动画
+    let firstAnimate = new PIXI.Container(),
+      icon = PIXI.Sprite.from(things02["slide_icon.png"])
+    firstAnimate.addChild(icon);
+    let max = new TweenMax.fromTo(icon, 0.5, {
+      y: 0,
+    }, {
+      y: -30
+    })
+    max.yoyo(true).repeat(-1)
+    icon.x = 80;
+    firstAnimate.position.set(272, this.height / this.scale - 285 * this.scale);
+    this.app.stage.addChild(firstAnimate)
     // 藤蔓一
     var a = [];
     for (var n = 0; n < 60; n++) {
@@ -122,7 +142,7 @@ class LongPoem {
     this.S.visible = !1;
     this.X.visible = !1;
     let nc = this.nc = PIXI.Sprite.from(this.x[0]);
-    nc.y = 99;
+    nc.y = 90;
     this.app.stage.addChild(nc, this.X, this.S);
 
     this.initTouch();
