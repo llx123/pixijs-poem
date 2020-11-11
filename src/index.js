@@ -52,7 +52,7 @@ class LongPoem {
     let tree = PIXI.Sprite.from(things02['first_tree.png']);
     let people2 = PIXI.Sprite.from(things02['people2.png']);
     people2.y = 450;
-    this.app.stage.addChild(people2, tree);
+    let firstScene = new PIXI.Container();
 
     let firstContainer = new PIXI.Container();
     firstContainer.x = 245;
@@ -90,7 +90,6 @@ class LongPoem {
       }, 300),
       points.position.set(180, 395),
       firstContainer.addChild(points, title, text, logo);
-    this.app.stage.addChild(firstContainer);
 
     // 第一屏动画
     let firstAnimate = new PIXI.Container(),
@@ -104,52 +103,51 @@ class LongPoem {
     max.yoyo(true).repeat(-1)
     icon.x = 80;
     firstAnimate.position.set(272, this.height / this.scale - 285 * this.scale);
-    this.app.stage.addChild(firstAnimate)
     // 藤蔓一
     var a = [];
     for (var n = 0; n < 60; n++) {
       n < 30 ? a.push(loader.resources['static/tengman01.json'].textures["tengman_000" + n + ".png"]) : a.push(loader.resources['static/tengman02.json'].textures["tengman_000" + n + ".png"]);
     }
-    var i = new PIXI.AnimatedSprite(a);
-    i.animationSpeed = .4;
-    i.play();
-    this.app.stage.addChild(i);
+    var animateTeng1 = new PIXI.AnimatedSprite(a);
+    animateTeng1.animationSpeed = .4;
+    animateTeng1.play();
     // 少女荡秋千
     var s = [];
     for (var n = 0; n < 76; n++) {
       s.push(loader.resources['static/first_person.json'].textures[`a_000${n}.png`]);
     }
-    var r = new PIXI.AnimatedSprite(s);
-    r.position.set(420, 58)
-    r.animationSpeed = .4
-    r.play();
-    this.app.stage.addChild(r);
+    var animateGirl = new PIXI.AnimatedSprite(s);
+    animateGirl.position.set(420, 58)
+    animateGirl.animationSpeed = .4
+    animateGirl.play();
 
     // 人物一动画
-    this.x = [];
+    this.qPerson = [];
     for (var i = 5; i < 72; i++) {
       let n = i < 10 ? `0${i}` : i;
       if (i < 40) {
-        this.x.push(loader.resources['static/q1_person_0.json'].textures[`a_000${n}.png`])
+        this.qPerson.push(loader.resources['static/q1_person_0.json'].textures[`a_000${n}.png`])
       } else {
-        this.x.push(loader.resources['static/q1_person_1.json'].textures[`a_000${n}.png`])
+        this.qPerson.push(loader.resources['static/q1_person_1.json'].textures[`a_000${n}.png`])
       }
     }
-    this.X = PIXI.Sprite.from(loader.resources['static/q1_2.json'].textures["q1_tengman_0.png"]);
-    this.X.y = 90;
-    this.S = PIXI.Sprite.from(loader.resources['static/q1_2.json'].textures["q1_tengman_1.png"]);
-    this.S.y = 90;
-    this.S.visible = !1;
-    this.X.visible = !1;
-    let nc = this.nc = PIXI.Sprite.from(this.x[0]);
-    nc.y = 90;
-    this.app.stage.addChild(nc, this.X, this.S);
+    this.animateStep1 = PIXI.Sprite.from(loader.resources['static/q1_2.json'].textures["q1_tengman_0.png"]);
+    this.animateStep1.y = 90;
+    this.animateStep2 = PIXI.Sprite.from(loader.resources['static/q1_2.json'].textures["q1_tengman_1.png"]);
+    this.animateStep2.y = 90;
+    this.animateStep2.visible = !1;
+    this.animateStep1.visible = !1;
+    let moveSprite = this.nc = PIXI.Sprite.from(this.qPerson[0]);
+    moveSprite.y = 90;
+
+    firstScene.addChild(people2, tree, firstContainer, animateTeng1, animateGirl, this.animateStep1, this.animateStep2, moveSprite, firstAnimate);
+    this.app.stage.addChild(firstScene);
 
     this.initTouch();
   }
   change() {
-    let X = this.X;
-    let S = this.S;
+    let X = this.animateStep1;
+    let S = this.animateStep2;
     35 < this.currentFrame && this.currentFrame <= 51 ? (X.visible = !0,
       S.visible = !1) : 51 < this.currentFrame ? (X.visible = !1,
       S.visible = !0) : (S.visible = !1,
@@ -160,7 +158,7 @@ class LongPoem {
     console.log(index, progress)
     if (index >= 0 && index < 67) {
       this.change()
-      this.nc.texture = PIXI.Sprite.from(this.x[index]).texture;
+      this.nc.texture = PIXI.Sprite.from(this.qPerson[index]).texture;
     }
   }
   initTouch() {
