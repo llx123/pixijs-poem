@@ -153,9 +153,8 @@ class LongPoem {
       S.visible = !0) : (S.visible = !1,
       X.visible = !1)
   }
-  play(progress) {
+  playPerson1(progress) {
     let index = this.currentFrame = Math.floor(progress * 5 * 34);
-    console.log(index, progress)
     if (index >= 0 && index < 67) {
       this.change()
       this.nc.texture = PIXI.Sprite.from(this.qPerson[index]).texture;
@@ -179,8 +178,12 @@ class LongPoem {
       maxSpeed: 2, //不必需，触摸反馈的最大速度限制 
       value: 0,
       change: (value) => {
+        if (value > 0) {
+          value = 0;
+        }
+        this.app.stage.y = value;
         let progress = -value / 2000;
-        this.play(progress);
+        this.playPerson1(progress);
       }
     })
   }
