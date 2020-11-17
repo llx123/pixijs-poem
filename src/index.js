@@ -17,7 +17,7 @@ class LongPoem {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
-    this.scale = this.width / 750;
+    this.pageHeight = 5890;
   }
   initScene() {
     const {
@@ -30,7 +30,7 @@ class LongPoem {
       height: height,
       backgroundColor: 16711673
     });
-    this.app.stage.scale.set(scale, scale);
+    // this.app.stage.scale.set(scale, scale); 这个方法模糊会导致模糊 更改使用viewport
     // 加入场景
     document.querySelector('#app').appendChild(this.app.view);
     this.load();
@@ -38,6 +38,8 @@ class LongPoem {
   load() {
     const loader = PIXI.Loader.shared;
     loader
+      .add("bg1", 'static/bg1.jpg')
+      .add("bg2", 'static/bg2.jpg')
       .add('static/things_02.json')
       .add('static/tengman01.json')
       .add('static/tengman02.json')
@@ -48,11 +50,24 @@ class LongPoem {
       .load(this.setup.bind(this))
   }
   setup(loader) {
-    let things02 = loader.resources['static/things_02.json'].textures;
+    let firstScene = new PIXI.Container();
+
+    let resources = loader.resources;
+    let things02 = resources['static/things_02.json'].textures;
+
+    // 背景图
+    for (var e = 0; e < 5; e++) {
+      var t = PIXI.Sprite.from(resources.bg1.texture),
+        a = PIXI.Sprite.from(resources.bg2.texture);
+      t.y = 2945 * e * 2,
+        a.y = 2945 * (2 * e + 1),
+        firstScene.addChild(t, a)
+    }
+
+
     let tree = PIXI.Sprite.from(things02['first_tree.png']);
     let people2 = PIXI.Sprite.from(things02['people2.png']);
     people2.y = 450;
-    let firstScene = new PIXI.Container();
 
     let firstContainer = new PIXI.Container();
     firstContainer.x = 245;
@@ -93,8 +108,10 @@ class LongPoem {
 
     // 第一屏动画
     let firstAnimate = new PIXI.Container(),
-      icon = PIXI.Sprite.from(things02["slide_icon.png"])
-    firstAnimate.addChild(icon);
+      icon = PIXI.Sprite.from(things02["slide_icon.png"]),
+      slide_text = PIXI.Sprite.from(things02["slide_text.png"]);
+    slide_text.y = 64;
+    firstAnimate.addChild(icon, slide_text);
     let max = new TweenMax.fromTo(icon, 0.5, {
       y: 0,
     }, {
@@ -102,11 +119,17 @@ class LongPoem {
     })
     max.yoyo(true).repeat(-1)
     icon.x = 80;
-    firstAnimate.position.set(272, this.height / this.scale - 285 * this.scale);
+
+    console.log(this.height - 285);
+    firstAnimate.position.set(272, this.height - 285);
+    this.height < 1334 && (firstContainer.pivot.set(60, 0),
+      firstContainer.x = 305,
+      firstContainer.scale.set(1 - (1334 - this.height) / 1e3),
+      firstAnimate.position.set(272, this.height - 225));
     // 藤蔓一
     var a = [];
     for (var n = 0; n < 60; n++) {
-      n < 30 ? a.push(loader.resources['static/tengman01.json'].textures["tengman_000" + n + ".png"]) : a.push(loader.resources['static/tengman02.json'].textures["tengman_000" + n + ".png"]);
+      n < 30 ? a.push(resources['static/tengman01.json'].textures["tengman_000" + n + ".png"]) : a.push(resources['static/tengman02.json'].textures["tengman_000" + n + ".png"]);
     }
     var animateTeng1 = new PIXI.AnimatedSprite(a);
     animateTeng1.animationSpeed = .4;
@@ -114,7 +137,7 @@ class LongPoem {
     // 少女荡秋千
     var s = [];
     for (var n = 0; n < 76; n++) {
-      s.push(loader.resources['static/first_person.json'].textures[`a_000${n}.png`]);
+      s.push(resources['static/first_person.json'].textures[`a_000${n}.png`]);
     }
     var animateGirl = new PIXI.AnimatedSprite(s);
     animateGirl.position.set(420, 58)
@@ -126,26 +149,27 @@ class LongPoem {
     for (var i = 5; i < 72; i++) {
       let n = i < 10 ? `0${i}` : i;
       if (i < 40) {
-        this.qPerson.push(loader.resources['static/q1_person_0.json'].textures[`a_000${n}.png`])
+        this.qPerson.push(resources['static/q1_person_0.json'].textures[`a_000${n}.png`])
       } else {
-        this.qPerson.push(loader.resources['static/q1_person_1.json'].textures[`a_000${n}.png`])
+        this.qPerson.push(resources['static/q1_person_1.json'].textures[`a_000${n}.png`])
       }
     }
-    this.animateStep1 = PIXI.Sprite.from(loader.resources['static/q1_2.json'].textures["q1_tengman_0.png"]);
-    this.animateStep1.y = 90;
-    this.animateStep2 = PIXI.Sprite.from(loader.resources['static/q1_2.json'].textures["q1_tengman_1.png"]);
-    this.animateStep2.y = 90;
+    this.q1Animate = new PIXI.AnimatedSprite(this.qPerson)._textures;
+    this.animateStep1 = PIXI.Sprite.from(resources['static/q1_2.json'].textures["q1_tengman_0.png"]);
+    this.animateStep1.y = 490;
+    this.animateStep2 = PIXI.Sprite.from(resources['static/q1_2.json'].textures["q1_tengman_1.png"]);
+    this.animateStep2.y = 490;
     this.animateStep2.visible = !1;
     this.animateStep1.visible = !1;
     let moveSprite = this.nc = PIXI.Sprite.from(this.qPerson[0]);
-    moveSprite.y = 90;
+    moveSprite.y = 490;
 
     firstScene.addChild(people2, tree, firstContainer, animateTeng1, animateGirl, this.animateStep1, this.animateStep2, moveSprite, firstAnimate);
     this.app.stage.addChild(firstScene);
 
     this.initTouch();
   }
-  change() {
+  changeFirstPerson() {
     let X = this.animateStep1;
     let S = this.animateStep2;
     35 < this.currentFrame && this.currentFrame <= 51 ? (X.visible = !0,
@@ -156,8 +180,8 @@ class LongPoem {
   playPerson1(progress) {
     let index = this.currentFrame = Math.floor(progress * 5 * 34);
     if (index >= 0 && index < 67) {
-      this.change()
-      this.nc.texture = PIXI.Sprite.from(this.qPerson[index]).texture;
+      this.changeFirstPerson()
+      this.nc.texture = this.q1Animate[index];
     }
   }
   initTouch() {
@@ -168,7 +192,7 @@ class LongPoem {
         y: 0
       }, //运动的对象
       property: "y", //被运动的属性
-      min: -2000, //不必需,运动属性的最小值
+      min: -this.pageHeight, //不必需,运动属性的最小值
       max: 0, //不必需,滚动属性的最大值
       sensitivity: 1, //不必需,触摸区域的灵敏度，默认值为1，可以为负数
       factor: 1, //不必需,表示触摸位移运动位移与被运动属性映射关系，默认值是1
@@ -181,8 +205,11 @@ class LongPoem {
         if (value > 0) {
           value = 0;
         }
+        if (value < -this.pageHeight) {
+          value = -this.pageHeight;
+        }
         this.app.stage.y = value;
-        let progress = -value / 2000;
+        let progress = -value / this.pageHeight;
         this.playPerson1(progress);
       }
     })

@@ -16,6 +16,18 @@
 
 <body>
   <div id="app"></div>
+  <script>
+    // 解决scale模糊问题
+    (function (e, n) {
+      var
+        vpt = document.querySelector('meta[name="viewport"]'),
+        pw = document.documentElement.clientWidth,
+        o = pw / n;
+
+      vpt.setAttribute("content", "width=".concat(n, ",initial-scale=").concat(o, ",maximum-scale=").concat(o,
+        ",minimum-scale=").concat(o, ",viewport-fit=cover"))
+    })("fixed", 750);
+  </script>
 </body>
 
 </html>
