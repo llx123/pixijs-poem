@@ -18,6 +18,7 @@ class LongPoem {
     this.height = window.innerHeight;
 
     this.pageHeight = 5890;
+    this.animateList = [];
   }
   initScene() {
     const {
@@ -83,25 +84,25 @@ class LongPoem {
       var m = new PIXI.Container,
         v = m.blackDot = PIXI.Sprite.from(things02["black_dot.png"]),
         h = m.redDot = PIXI.Sprite.from(things02["red_dot.png"])
-      h.visible = !1,
+      h.visible = false,
         m.x = n % 3 * 78,
         m.y = 78 * parseInt(n / 3),
         m.addChild(v, h),
         points.addChild(m)
     }
-    points.children[0].blackDot.visible = !1,
-      points.children[0].redDot.visible = !0;
+    points.children[0].blackDot.visible = false,
+      points.children[0].redDot.visible = true;
     var g = 0,
       x = 0;
     setInterval(function () {
-        points.children[g].blackDot.visible = !0,
-          points.children[g].redDot.visible = !1,
+        points.children[g].blackDot.visible = true,
+          points.children[g].redDot.visible = false,
           x = g,
           g = parseInt(9 * Math.random()),
           x == g && (g = parseInt(9 * Math.random()),
             x = g),
-          points.children[g].blackDot.visible = !1,
-          points.children[g].redDot.visible = !0
+          points.children[g].blackDot.visible = false,
+          points.children[g].redDot.visible = true
       }, 300),
       points.position.set(180, 395),
       firstContainer.addChild(points, title, text, logo);
@@ -154,36 +155,37 @@ class LongPoem {
         this.qPerson.push(resources['static/q1_person_1.json'].textures[`a_000${n}.png`])
       }
     }
-    this.q1Animate = new PIXI.AnimatedSprite(this.qPerson)._textures;
+
     this.animateStep1 = PIXI.Sprite.from(resources['static/q1_2.json'].textures["q1_tengman_0.png"]);
     this.animateStep1.y = 490;
     this.animateStep2 = PIXI.Sprite.from(resources['static/q1_2.json'].textures["q1_tengman_1.png"]);
     this.animateStep2.y = 490;
-    this.animateStep2.visible = !1;
-    this.animateStep1.visible = !1;
-    let moveSprite = this.nc = PIXI.Sprite.from(this.qPerson[0]);
-    moveSprite.y = 490;
+    this.animateStep2.visible = false;
+    this.animateStep1.visible = false;
+    let newAnimPerson1 = new PIXI.AnimatedSprite(this.qPerson);
+    newAnimPerson1.y = 490;
 
-    firstScene.addChild(people2, tree, firstContainer, animateTeng1, animateGirl, this.animateStep1, this.animateStep2, moveSprite, firstAnimate);
+    this.animateList.push({
+      ani: newAnimPerson1,
+      startStamp: 475,
+      endStamp: 1214,
+      endFrame: 66
+    });
+    let X = this.animateStep1;
+    let S = this.animateStep2;
+    newAnimPerson1.onFrameChange = function () {
+      35 < this.currentFrame && this.currentFrame <= 51 ? (X.visible = true,
+        S.visible = false) : 51 < this.currentFrame ? (X.visible = false,
+        S.visible = true) : (S.visible = false,
+        X.visible = false)
+    };
+
+    firstScene.addChild(people2, tree, firstContainer, animateTeng1, animateGirl, this.animateStep1, this.animateStep2, newAnimPerson1, firstAnimate);
     this.app.stage.addChild(firstScene);
 
     this.initTouch();
   }
-  changeFirstPerson() {
-    let X = this.animateStep1;
-    let S = this.animateStep2;
-    35 < this.currentFrame && this.currentFrame <= 51 ? (X.visible = !0,
-      S.visible = !1) : 51 < this.currentFrame ? (X.visible = !1,
-      S.visible = !0) : (S.visible = !1,
-      X.visible = !1)
-  }
-  playPerson1(progress) {
-    let index = this.currentFrame = Math.floor(progress * 5 * 34);
-    if (index >= 0 && index < 67) {
-      this.changeFirstPerson()
-      this.nc.texture = this.q1Animate[index];
-    }
-  }
+
   initTouch() {
     new PhyTouch({
       touch: "#app", //反馈触摸的dom
@@ -210,7 +212,12 @@ class LongPoem {
         }
         this.app.stage.y = value;
         let progress = -value / this.pageHeight;
-        this.playPerson1(progress);
+
+        let i = -value;
+        this.animateList.forEach(function (e, t) {
+          i > e.startStamp && i < e.endStamp ? e.ani.gotoAndStop(Math.min((i - e.startStamp) / (e.endStamp - e.startStamp) * e.endFrame, e.endFrame)) : i <= e.startStamp ? e.ani.gotoAndStop(0) : i > e.endStamp && (e.noStop ? e.ani.playing || e.ani.gotoAndPlay(70) : e.ani.gotoAndStop(e.endFrame))
+        })
+
       }
     })
   }
