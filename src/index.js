@@ -1,7 +1,7 @@
 import {
   addSprite,
   renderLine,
-  et
+  addSpriteWithData
 } from './utils';
 import {
   AnimatedSprite,
@@ -51,15 +51,18 @@ class LongPoem {
   load() {
     const loader = Loader.shared;
     loader
-      .add("bg1", 'static/bg1.jpg')
-      .add("bg2", 'static/bg2.jpg')
+      .add('bg1', 'static/bg1.jpg')
+      .add('bg2', 'static/bg2.jpg')
       .add('static/things_02.json')
       .add('static/tengman01.json')
       .add('static/tengman02.json')
       .add('static/first_person.json')
       .add('static/q1_person_0.json')
       .add('static/q1_person_1.json')
+      .add('static/q1_1.json')
       .add('static/q1_2.json')
+      .add('01_leaf1', 'static/01_leaf1.json')
+      .add('01_leaf2', 'static/01_leaf2.json')
       .load(this.setup.bind(this))
   }
   setup(loader) {
@@ -104,17 +107,17 @@ class LongPoem {
     }
     points.children[0].blackDot.visible = false,
       points.children[0].redDot.visible = true;
-    var g = 0,
+    var dotNum = 0,
       x = 0;
     setInterval(function () {
-        points.children[g].blackDot.visible = true,
-          points.children[g].redDot.visible = false,
-          x = g,
-          g = parseInt(9 * Math.random()),
-          x == g && (g = parseInt(9 * Math.random()),
-            x = g),
-          points.children[g].blackDot.visible = false,
-          points.children[g].redDot.visible = true
+        points.children[dotNum].blackDot.visible = true,
+          points.children[dotNum].redDot.visible = false,
+          x = dotNum,
+          dotNum = parseInt(9 * Math.random()),
+          x == dotNum && (dotNum = parseInt(9 * Math.random()),
+            x = dotNum),
+          points.children[dotNum].blackDot.visible = false,
+          points.children[dotNum].redDot.visible = true
       }, 300),
       points.position.set(180, 395),
       firstContainer.addChild(points, title, text, logo);
@@ -183,13 +186,12 @@ class LongPoem {
       endStamp: 1214,
       endFrame: 66
     });
-    let X = this.animateStep1;
-    let S = this.animateStep2;
-    newAnimPerson1.onFrameChange = function () {
-      35 < this.currentFrame && this.currentFrame <= 51 ? (X.visible = true,
-        S.visible = false) : 51 < this.currentFrame ? (X.visible = false,
-        S.visible = true) : (S.visible = false,
-        X.visible = false)
+    let _this = this;
+    newAnimPerson1.onFrameChange = function() {
+      35 < this.currentFrame && this.currentFrame <= 51 ? (_this.animateStep1.visible = true,
+        _this.animateStep2.visible = false) : 51 < this.currentFrame ? (_this.animateStep1.visible = false,
+        _this.animateStep2.visible = true) : (_this.animateStep2.visible = false,
+        _this.animateStep1.visible = false)
     };
 
     firstScene.addChild(people2, tree, firstContainer, animateTeng1, animateGirl, this.animateStep1, this.animateStep2, newAnimPerson1, firstAnimate);
@@ -206,12 +208,430 @@ class LongPoem {
         y: this.height - 120
       }]
     }, Sprite);
+
     this.app.stage.addChild(firstScene);
 
-
     this.lineProp = renderLine(Container, things02, this.app.stage, Sprite, this.height);
+    // test开始
+    var Ae = new Container;
+    Ae.y = this.height;
+    var e = [];
+    for (var t = 0; t < 57; t++) {
+      e.push(resources['01_leaf1'].textures["2_000" + (t < 10 ? "0" + t : t) + ".png"])
+    }
+    var a = new AnimatedSprite(e);
+    a.animationSpeed = .3,
+      a.x = 515,
+      a.play();
+    for (var n = [], o = 0; o < 47; o++) {
+      n.push(resources['01_leaf2'].textures["a_000" + (o < 10 ? "0" + o : o) + ".png"])
+    }
+    var i = new AnimatedSprite(n);
+    i.animationSpeed = .28,
+      i.y = 409,
+      i.play()
+    Ae.addChild(a, i);
+    addSprite({
+      box: Ae,
+      resource: things02,
+      img: [{
+        name: "01_title.png",
+        x: 236,
+        y: 317
+      }, {
+        name: "01_right_leaf.png",
+        x: 675,
+        y: 154
+      }, {
+        name: "01_flower.png",
+        x: 461,
+        y: 1210
+      }]
+    }, Sprite);
 
+    addSpriteWithData({
+      box: Ae,
+      resource: things02,
+      img: [{
+        name: "01_leaf_1.png",
+        x: 35,
+        y: 90,
+        data: [{
+          startStamp: 100,
+          endStamp: 1600,
+          start: {
+            x: 35,
+            y: 90,
+            rotation: .01
+          },
+          end: {
+            x: 135,
+            y: 290,
+            rotation: -Math.PI / 180 * 30
+          }
+        }]
+      }, {
+        name: "01_leaf_2.png",
+        x: 50,
+        y: 71,
+        data: [{
+          startStamp: 100,
+          endStamp: 2e3,
+          start: {
+            x: 50,
+            y: 71,
+            rotation: .01
+          },
+          end: {
+            x: 60,
+            y: 271,
+            rotation: Math.PI / 180 * 30
+          }
+        }]
+      }, {
+        name: "01_leaf_3.png",
+        x: 122,
+        y: 154,
+        data: [{
+          startStamp: 100,
+          endStamp: 2e3,
+          start: {
+            x: 122,
+            y: 154,
+            rotation: .01
+          },
+          end: {
+            x: 522,
+            y: 254,
+            rotation: -Math.PI / 180 * 30
+          }
+        }]
+      }, {
+        name: "01_leaf_4.png",
+        x: 700,
+        y: 749,
+        data: [{
+          startStamp: 600,
+          endStamp: 2500,
+          start: {
+            x: 700,
+            y: 749,
+            rotation: Math.PI / 180 * 10
+          },
+          end: {
+            x: 500,
+            y: 800,
+            rotation: Math.PI / 180 * 30
+          }
+        }]
+      }, {
+        name: "01_leaf_5.png",
+        x: 611,
+        y: 916,
+        data: [{
+          startStamp: 600,
+          endStamp: 2500,
+          start: {
+            x: 711,
+            y: 816,
+            rotation: .01
+          },
+          end: {
+            x: 460,
+            y: 1016,
+            rotation: Math.PI / 180 * 20
+          }
+        }]
+      }, {
+        name: "01_leaf_6.png",
+        x: 625,
+        y: 929,
+        data: [{
+          startStamp: 600,
+          endStamp: 2500,
+          start: {
+            x: 525,
+            y: 829,
+            rotation: .01
+          },
+          end: {
+            x: 725,
+            y: 1029,
+            rotation: -Math.PI / 180 * 20
+          }
+        }]
+      }, {
+        name: "01_leaf_7.png",
+        x: 665,
+        y: 1003,
+        data: [{
+          startStamp: 600,
+          endStamp: 2800,
+          start: {
+            x: 665,
+            y: 953
+          },
+          end: {
+            x: 645,
+            y: 1083
+          }
+        }]
+      }, {
+        name: "01_leaf_8.png",
+        x: 56,
+        y: 1210,
+        data: [{
+          startStamp: 1e3,
+          endStamp: 3e3,
+          start: {
+            x: 156,
+            y: 1110,
+            rotation: .01
+          },
+          end: {
+            x: -30,
+            y: 1310,
+            rotation: Math.PI / 180 * 30
+          }
+        }]
+      }, {
+        name: "01_leaf_9.png",
+        x: 680,
+        y: 288,
+        data: [{
+          startStamp: 100,
+          endStamp: 1600,
+          start: {
+            x: 680,
+            y: 258,
+            rotation: .01
+          },
+          end: {
+            x: 680,
+            y: 288,
+            rotation: -Math.PI / 180 * 10
+          }
+        }]
+      }]
+    }, Sprite)
 
+    for (var s = [], r = 0; r < 45; r++) {
+      s.push(resources['static/q1_1.json'].textures["a_000" + (r < 10 ? "0" + r : r) + ".png"]);
+    }
+    var d = new AnimatedSprite(s);
+    d.position.set(-70, -65),
+      d.animationSpeed = .3;
+    d.play();
+    var p = new Container();
+    for (var c = [], u = 0; u < 60; u++)
+      c.push(resources['static/q1_2.json'].textures["C_000" + (u < 10 ? "0" + u : u) + ".png"]);
+    var m = new AnimatedSprite(c);
+    m.position.set(150, 30),
+      m.animationSpeed = .3;
+    for (var v = [], h = 0; h < 61; h++)
+      v.push(resources['static/q1_2.json'].textures["D_000" + (h < 10 ? "0" + h : h) + ".png"]);
+    var g = new AnimatedSprite(v);
+    g.position.set(280, -120),
+      g.animationSpeed = .3;
+
+    var x = new Container,
+      _ = Sprite.from(things02["01_left_kuo.png"]),
+      f = Sprite.from(things02["01_right_kuo.png"]);
+    x.addChild(_, f),
+      _.x = -50,
+      _.visible = !1,
+      f.visible = !1;
+    var y = Ae.questions = new Container;
+    y.scrollY = 1450,
+      y.selected = !1,
+      y.addChild(x),
+      y.position.set(263, 490);
+
+    // 01
+    for (var w = [d, p, m, g], b = (n) => {
+        var o = new Container;
+        o.select = !1,
+          o.y = 210 * n,
+          o.addChild(w[n]),
+          w[n].visible = !1,
+          o.ani = w[n];
+        var e = o.textBg = Sprite.from(things02["01_text_bg.png"]);
+        e.x = -5,
+          e.visible = !1;
+        var t = o.text = Sprite.from(things02["01_t" + (n + 1) + ".png"]);
+        if (3 == n) {
+          var a = o.flower = Sprite.from(things02["01_3_flower.png"]);
+          a.visible = !1,
+            a.position.set(-112, -73),
+            o.addChild(a)
+        }
+        this.ut(t,  () => {
+            var e = o;
+            if (1 != e.active)
+              if (this.mt(0, n),
+              console.log(y),
+                y.children.forEach(function (e, t) {
+                  1 == e.active && (e.active = !1,
+                    e.ani.stop(),
+                    e.ani.visible = !1,
+                    e.textBg.visible = !1,
+                    4 == t && (e.flower.visible = !1))
+                }),
+                e.active = !0,
+                e.ani.play(),
+                e.ani.visible = !0,
+                e.textBg.visible = !0,
+                3 == n && (e.flower.visible = !0),
+                0 == _.visible)
+                _.visible = !0,
+                f.visible = !0,
+                // new E.default.Tween({
+                //   alpha: 0
+                // }).to({
+                //   alpha: 1
+                // }, 300).onUpdate(function (e, t) {
+                //   _.alpha = e.alpha,
+                //     f.alpha = e.alpha
+                // }).start(),
+                _.y = 210 * n - 20,
+                f.y = 210 * n - 20,
+                f.x = 0 == n ? 429 : 340;
+              else {
+                var t, a = 210 * n - 20;
+                t = 0 == n ? 429 : 340
+                  // new E.default.Tween({
+                  //   y: _.y
+                  // }).to({
+                  //   y: a
+                  // }, 300).onUpdate(function (e, t) {
+                  //   _.y = e.y,
+                  //     f.y = e.y
+                  // }).start(),
+                  // new E.default.Tween({
+                  //   x: f.x
+                  // }).to({
+                  //   x: t
+                  // }, 300).onUpdate(function (e, t) {
+                  //   f.x = e.x
+                  // }).start()
+              }
+          }),
+          o.addChild(e, t),
+          y.addChild(o)
+      }, X = 0; X < 4; X++) {
+      b(X);
+    }
+    this.Ae = Ae;
+    Ae.addChild(y)
+    this.app.stage.addChild(Ae);
+
+    (function () {
+      for (var o = [Ae], i = [{
+          x: 265,
+          y: 293
+        }, {
+          x: 266,
+          y: 412
+        }, {
+          x: 243,
+          y: 650
+        }, {
+          x: 232,
+          y: 440
+        }, {
+          x: 286,
+          y: 838
+        }, {
+          x: 229,
+          y: 953
+        }], e = function (e) {
+          console.log(o, e, 'aaaaaaaaa')
+          var t = o[e].notSelect = new Container;
+          t.visible = !1;
+          var a = Sprite.from(things02["not_icon.png"]),
+            n = Sprite.from(things02["not_text.png"]);
+          n.position.set(28, 1),
+            t.addChild(a, n),
+            t.position.set(i[e].x, i[e].y),
+            // t.tween = new E.default.Tween({
+            //   alpha: 1
+            // }).to({
+            //   alpha: 0
+            // }, 500).onUpdate(function (e, t) {
+            //   a.alpha = e.alpha
+            // }).yoyo(!0).easing(E.default.Easing.Quadratic.Out).repeat(1 / 0),
+            t.play = function () {
+              t.visible = !0,
+                // t.tween.start()
+                console.log('start');
+            },
+            t.stop = function () {
+              t.visible = !1,
+                // t.tween.stop()
+                console.log('stop');
+            },
+            o[e].addChild(t)
+        }, t = 0; t < o.length; t++)
+        e(t);
+        var Ne = new Container;
+      var a = Ne.nameNotice = new Container;
+      a.visible = !1;
+      var n = Sprite.from(things02["not_icon.png"]),
+        s = Sprite.from(things02["no_name.png"]);
+      s.position.set(28, 1);
+      var r = Sprite.from(things02["long_name.png"]);
+      r.position.set(28, 1);
+      var d = Sprite.from(things02["wrong_name.png"]);
+      d.position.set(28, 1),
+        s.visible = d.visible = r.visible = !1,
+        a.addChild(n, s, d, r),
+        a.position.set(99, 671),
+        // a.tween = new E.default.Tween({
+        //   alpha: 1
+        // }).to({
+        //   alpha: 0
+        // }, 500).onUpdate(function (e, t) {
+        //   n.alpha = e.alpha
+        // }).yoyo(!0).easing(E.default.Easing.Quadratic.Out).repeat(1 / 0),
+        a.play = function (e) {
+          a.visible = !0,
+            // a.tween.start(),
+            "no_name" === e && (s.visible = !0),
+            "long_name" === e && (r.visible = !0),
+            "wrong_name" === e && (d.visible = !0)
+        },
+        a.stop = function () {
+          a.visible = !1,
+            s.visible = d.visible = r.visible = !1,
+            // a.tween.stop()
+            console.log('stop');
+        },
+        Ne.addChild(a);
+      var p = Ne.sexNotice = new Container;
+      p.visible = !1;
+      var l = Sprite.from(things02["not_icon.png"]),
+        c = Sprite.from(things02["no_sex.png"]);
+      c.position.set(28, 1),
+        p.addChild(l, c),
+        p.position.set(99, 1e3),
+        // p.tween = new E.default.Tween({
+        //   alpha: 1
+        // }).to({
+        //   alpha: 0
+        // }, 500).onUpdate(function (e, t) {
+        //   l.alpha = e.alpha
+        // }).yoyo(!0).easing(E.default.Easing.Quadratic.Out).repeat(1 / 0),
+        p.play = function () {
+          p.visible = !0,
+            p.tween.start()
+        },
+        p.stop = function () {
+          p.visible = !1,
+            p.tween.stop()
+        },
+        Ne.addChild(p)
+    })()
+    // 结束
     this.initTouch();
   }
 
@@ -292,6 +712,35 @@ class LongPoem {
         // }).start()
       )
     }
+  }
+  ut(a, t) {
+    a.interactive = !0,
+      a.buttonMode = !0,
+      a.on("touchstart", function (e) {
+        var t = e.data.originalEvent;
+        a.startY = t.touches[0].pageY,
+          a.touch = !0,
+          a.yValue = 0
+      }).on("touchmove", function (e) {
+        if (a.touch) {
+          var t = e.data.originalEvent;
+          a.yValue = Math.abs(t.touches[0].pageY - a.startY)
+        }
+      }).on("touchend", function (e) {
+        a.touch && (30 < a.yValue || (
+          // $("#click")[0].currentTime = 0,
+          // $("#click")[0].play(),
+          t()))
+      })
+  }
+  mt(e, t) {
+    let De = [this.Ae.questions];
+    console.log(this.Ae.questions.parent === this.Ae)
+    De[e].selected = !0,
+      De[e].selectIndex = t,
+      De[e].parent.notSelect.stop()
+      // _t.remove(De[e]),
+      // ht()
   }
 }
 

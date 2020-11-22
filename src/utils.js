@@ -11,6 +11,23 @@ export function addSprite(options, Sprite) {
   }
 }
 
+export function addSpriteWithData(options, Sprite) {
+  for (var t = options.box, img = options.img, resource = options.resource, index = 0; index < img.length; index++) {
+    var i = t[img[index].name] = Sprite.from(resource[img[index].name]);
+    if (i.data = img[index].data,
+      i.position.set(img[index].x, img[index].y),
+      img[index].pivot) {
+      var s = img[index];
+      i.pivot.set(s.pivot.x, s.pivot.y),
+        i.position = {
+          x: s.x + s.pivot.x,
+          y: s.y + s.pivot.y
+        }
+    }
+    t.addChild(i);
+  }
+}
+
 export function renderLine(Container, resource, stage, Sprite, y) {
   var lineProp = new Container,
     line = new Container;
