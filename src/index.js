@@ -63,6 +63,17 @@ class LongPoem {
       .add('static/q1_2.json')
       .add('01_leaf1', 'static/01_leaf1.json')
       .add('01_leaf2', 'static/01_leaf2.json')
+      .add('q2_leaf', 'static/q2_leaf.json')
+      .add('q1_q2_person_0', 'static/q1_q2_person_0.json')
+      .add('q1_q2_person_1', 'static/q1_q2_person_1.json')
+      .add('q1_q2_person_2', 'static/q1_q2_person_2.json')
+      .add('q2_0_1', 'static/q2_0_1.json')
+      .add('q3_leaf1', 'static/q3_leaf1.json')
+      .add('q3_leaf2', 'static/q3_leaf2.json')
+      .add('q2_q3', 'static/q2_q3.json')
+      .add('q3_a0', 'static/q3_a0.json')
+      .add('q3_a1', 'static/q3_a1.json')
+      .add('q3_a2', 'static/q3_a2.json')
       .load(this.setup.bind(this))
   }
   setup(loader) {
@@ -136,7 +147,6 @@ class LongPoem {
     max.yoyo(true).repeat(-1)
     icon.x = 80;
 
-    console.log(this.height - 285);
     firstAnimate.position.set(272, this.height - 285);
     this.height < 1334 && (firstContainer.pivot.set(60, 0),
       firstContainer.x = 305,
@@ -187,7 +197,7 @@ class LongPoem {
       endFrame: 66
     });
     let _this = this;
-    newAnimPerson1.onFrameChange = function() {
+    newAnimPerson1.onFrameChange = function () {
       35 < this.currentFrame && this.currentFrame <= 51 ? (_this.animateStep1.visible = true,
         _this.animateStep2.visible = false) : 51 < this.currentFrame ? (_this.animateStep1.visible = false,
         _this.animateStep2.visible = true) : (_this.animateStep2.visible = false,
@@ -423,10 +433,16 @@ class LongPoem {
       d.animationSpeed = .3;
     d.play();
     var p = new Container();
+    p.play = function () {
+      console.log('play');
+    }
+    p.stop = function () {
+      console.log('stop');
+    }
     for (var c = [], u = 0; u < 60; u++)
       c.push(resources['static/q1_2.json'].textures["C_000" + (u < 10 ? "0" + u : u) + ".png"]);
     var m = new AnimatedSprite(c);
-    m.position.set(150, 30),
+    m.position.set(-150, 30),
       m.animationSpeed = .3;
     for (var v = [], h = 0; h < 61; h++)
       v.push(resources['static/q1_2.json'].textures["D_000" + (h < 10 ? "0" + h : h) + ".png"]);
@@ -447,7 +463,7 @@ class LongPoem {
       y.addChild(x),
       y.position.set(263, 490);
 
-    // 01
+    // 01-questions
     for (var w = [d, p, m, g], b = (n) => {
         var o = new Container;
         o.select = !1,
@@ -465,11 +481,10 @@ class LongPoem {
             a.position.set(-112, -73),
             o.addChild(a)
         }
-        this.ut(t,  () => {
+        this.ut(t, () => {
             var e = o;
             if (1 != e.active)
               if (this.mt(0, n),
-              console.log(y),
                 y.children.forEach(function (e, t) {
                   1 == e.active && (e.active = !1,
                     e.ani.stop(),
@@ -498,22 +513,22 @@ class LongPoem {
                 f.x = 0 == n ? 429 : 340;
               else {
                 var t, a = 210 * n - 20;
-                t = 0 == n ? 429 : 340
+                t = 0 == n ? 429 : 340,
                   // new E.default.Tween({
                   //   y: _.y
                   // }).to({
                   //   y: a
                   // }, 300).onUpdate(function (e, t) {
-                  //   _.y = e.y,
-                  //     f.y = e.y
-                  // }).start(),
-                  // new E.default.Tween({
-                  //   x: f.x
-                  // }).to({
-                  //   x: t
-                  // }, 300).onUpdate(function (e, t) {
-                  //   f.x = e.x
-                  // }).start()
+                  _.y = e.y,
+                  f.y = e.y
+                // }).start(),
+                // new E.default.Tween({
+                //   x: f.x
+                // }).to({
+                //   x: t
+                // }, 300).onUpdate(function (e, t) {
+                //   f.x = e.x
+                // }).start()
               }
           }),
           o.addChild(e, t),
@@ -521,12 +536,484 @@ class LongPoem {
       }, X = 0; X < 4; X++) {
       b(X);
     }
+
     this.Ae = Ae;
     Ae.addChild(y)
     this.app.stage.addChild(Ae);
+    // 02-questions
+    var Me = new Container,
+      Ve = this.height;
+    (() => {
+      Ve += Ae.height - 100,
+        Me.y = Ve;
+      for (var e = [], t = 0; t < 50; t++)
+        e.push(resources['q2_leaf'].textures["leaf1_000" + t + ".png"]);
+      var a = new AnimatedSprite(e);
+      a.animationSpeed = .3,
+        a.y = -60,
+        a.play();
+      for (var n = [], o = 0; o < 53; o++)
+        n.push(resources['q2_leaf'].textures["leaf2_000" + o + ".png"]);
+      var i = new AnimatedSprite(n);
+      i.animationSpeed = .3,
+        i.y = 440,
+        i.play(),
+        Me.addChild(a, i),
+        addSprite({
+          box: Me,
+          resource: things02,
+          img: [{
+            name: "02_title.png",
+            x: 237,
+            y: 436
+          }, {
+            name: "02_flower_1.png",
+            x: 460,
+            y: 4
+          }, {
+            name: "02_flower_2.png",
+            x: 323,
+            y: 81
+          }, {
+            name: "02_flower_3.png",
+            x: 309,
+            y: 162
+          }, {
+            name: "02_flower_4.png",
+            x: 178,
+            y: 200
+          }, {
+            name: "02_flower_5.png",
+            x: 579,
+            y: 416
+          }]
+        }, Sprite);
+
+      var y = "q1_q2_person_0",
+        w = "q1_q2_person_1",
+        b = "q1_q2_person_2";
+
+      for (var s = [], r = 0; r < 45; r++) {
+        s.push(resources[r < 24 ? y : r < 31 ? w : b].textures["a_000" + r + ".png"]);
+      }
+      var d = Sprite.from(resources['q1_q2_person_2'].textures["q1_q2_tengman.png"]);
+      d.visible = !1;
+      var p = new AnimatedSprite(s);
+      p.position.set(0, 0),
+        p.animationSpeed = .3,
+        p.onFrameChange = function () {
+          this.currentFrame < 35 ? d.visible = !1 : d.visible = !0
+        },
+        p.y = -200,
+        d.y = -200,
+        Me.addChild(d, p),
+        this.animateList.push({
+          ani: p,
+          startStamp: 2048,
+          endStamp: 2959,
+          endFrame: 44
+        });
+      var l = Me.questions = new Container;
+      l.selected = !1,
+        l.scrollY = 3010,
+        l.position.set(254, 596);
+      for (var c = [{
+          x: 0,
+          y: 0
+        }, {
+          x: 225,
+          y: 216
+        }, {
+          x: 0,
+          y: 346
+        }, {
+          x: 225,
+          y: 605
+        }], u = [{
+          x: -18,
+          y: 83
+        }, {
+          x: -18,
+          y: 17
+        }, {
+          x: -18,
+          y: 65
+        }, {
+          x: -18,
+          y: -4
+        }], m = [{
+          x: 60,
+          y: -40
+        }, {
+          x: -48,
+          y: -197
+        }, {
+          x: 63,
+          y: 0
+        }, {
+          x: 14,
+          y: -106
+        }], v = (t) => {
+          var a = new Container;
+          a.active = !1;
+          for (var e = [], n = 0; n < (0 == t ? 25 : 1 == t ? 48 : 2 == t ? 25 : 63); n++)
+            e.push(resources['q2_0_1'].textures[(0 == t ? "a" : 1 == t ? "b" : 2 == t ? "c" : "d") + "_000" + n + ".png"]);
+          var o = a.ani = new AnimatedSprite(e);
+          o.animationSpeed = .3,
+            o.position.set(m[t].x, m[t].y);
+          var i = a.letterBg = Sprite.from(things02["02_selection_bg.png"]);
+          i.position.set(u[t].x, u[t].y),
+            i.visible = !1;
+          var s = a.text = Sprite.from(things02["02_text_" + t + ".png"]);
+          a.addChild(i, s, o),
+            this.ut(a, () => {
+              var e = a;
+              1 != e.active && (this.mt(1, t),
+                l.children.forEach(function (e, t) {
+                  1 == e.active && (e.active = !1,
+                    e.ani.gotoAndStop(0),
+                    e.letterBg.visible = !1)
+                }),
+                e.active = !0,
+                e.ani.play(),
+                e.letterBg.visible = !0)
+            }),
+            a.position.set(c[t].x, c[t].y),
+            l.addChild(a)
+        }, h = 0; h < 4; h++)
+        v(h);
+      Me.addChild(l);
+      for (var g = [], x = 0; x < 54; x++)
+        g.push(resources['q2_0_1'].textures["qingting_000" + x + ".png"]);
+      var _ = new AnimatedSprite(g);
+      _.animationSpeed = .3,
+        _.position.set(170, 1250),
+        _.play(),
+        Me.addChild(_),
+        this.Me = Me,
+        this.app.stage.addChild(Me);
+    })();
+    // 03-questions
+    var Te = new Container;
+    (() => {
+      Ve += Me.height - 200,
+        Te.y = Ve,
+        addSprite({
+          box: Te,
+          resource: things02,
+          img: [{
+            name: "03_title.png",
+            x: 214,
+            y: 674
+          }, {
+            name: "03_branch.png",
+            x: 0,
+            y: 176
+          }, {
+            name: "03_leaf_2.png",
+            x: 20,
+            y: 1295
+          }]
+        }, Sprite),
+        addSpriteWithData({
+          box: Te,
+          resource: things02,
+          img: [{
+            name: "03_leaf_1_1.png",
+            x: 128,
+            y: 485,
+            data: [{
+              startStamp: 3200,
+              endStamp: 5e3,
+              start: {
+                x: 128,
+                y: 485,
+                rotation: .01
+              },
+              end: {
+                x: 178,
+                y: 885,
+                rotation: -Math.PI / 180 * 20
+              }
+            }]
+          }, {
+            name: "03_leaf_1_2.png",
+            x: 136,
+            y: 504,
+            data: [{
+              startStamp: 3200,
+              endStamp: 5e3,
+              start: {
+                x: 136,
+                y: 504,
+                rotation: .01
+              },
+              end: {
+                x: 386,
+                y: 804,
+                rotation: Math.PI / 180 * 30
+              }
+            }]
+          }, {
+            name: "03_leaf_1_3.png",
+            x: 43,
+            y: 568,
+            data: [{
+              startStamp: 3200,
+              endStamp: 5e3,
+              start: {
+                x: 43,
+                y: 568,
+                rotation: .01
+              },
+              end: {
+                x: -57,
+                y: 768,
+                rotation: Math.PI / 180 * 10
+              }
+            }]
+          }, {
+            name: "03_leaf_3.png",
+            x: 120,
+            y: 1634,
+            data: [{
+              startStamp: 4200,
+              endStamp: 6e3,
+              start: {
+                x: 20,
+                y: 1534
+              },
+              end: {
+                x: 220,
+                y: 1834
+              }
+            }]
+          }, {
+            name: "03_leaf_4.png",
+            x: 100,
+            y: 1534,
+            data: [{
+              startStamp: 4200,
+              endStamp: 6e3,
+              start: {
+                x: 200,
+                y: 1434
+              },
+              end: {
+                x: 0,
+                y: 1734
+              }
+            }]
+          }]
+        }, Sprite);
+      for (var e = [], t = 0; t < 50; t++)
+        e.push(resources['q3_leaf1'].textures["q3_leaf1_000" + t + ".png"]);
+      var a = new AnimatedSprite(e);
+      a.animationSpeed = .3,
+        a.position.set(604, 17),
+        a.play();
+      for (var n = [], o = 0; o < 48; o++)
+        n.push(resources['q3_leaf2'].textures["q3_leaf2_000" + o + ".png"]);
+      var i = new AnimatedSprite(n);
+      i.animationSpeed = .3,
+        i.position.set(0, 92),
+        i.play();
+      for (var s = [], r = 0; r < 50; r++)
+        s.push(resources['q3_leaf1'].textures["q3_flower_000" + r + ".png"]);
+      var d = new AnimatedSprite(s);
+      d.animationSpeed = .3,
+        d.position.set(522, 380),
+        d.play(),
+        Te.addChild(a, i, d);
+      for (var p = [], l = 0; l < 54; l++)
+        p.push(resources['q2_q3'].textures["q2_q3_000" + l + ".png"]);
+      var c = Sprite.from(resources['q2_q3'].textures["q2_q3_tengman.png"]);
+      c.visible = !1;
+      var u = new AnimatedSprite(p);
+      u.position.set(0, 0),
+        u.animationSpeed = .3,
+        u.onFrameChange = function () {
+          this.currentFrame < 37 ? c.visible = !1 : c.visible = !0
+        },
+        u.position.set(492, -250),
+        c.position.set(492, -250),
+        Te.addChild(c, u),
+        this.animateList.push({
+          ani: u,
+          startStamp: 3652,
+          endStamp: 4282,
+          endFrame: 53
+        });
+      var m = Te.questions = new Container;
+      m.selected = !1,
+        m.scrollY = 4650,
+        m.position.set(245, 806);
+      var v = new Container;
+
+      function h() {
+        for (var e = function (e) {
+            var a = Sprite.from(things02["bubble.png"]);
+            a.rotation = Math.random() * Math.PI * 2;
+            var t = {
+                x: 170 * Math.random(),
+                y: 80 * Math.random() + 80
+              },
+              n = {
+                x: t.x + 100 * Math.random() - 50,
+                y: t.y + Math.random() - 200 - 30
+              },
+              o = .3 * Math.random() + .7;
+            // new E.default.Tween({
+            //     x: t.x,
+            //     y: t.y
+            //   }).to({
+                // x: n.x,
+                // y: n.y
+            //   }, 600 * Math.random() + 2300).onUpdate(function (e, t) {
+            a.position.set(e.x, e.y),
+              a.scale.set(o * t),
+              // a.alpha = t < .2 ? 5 * t : .8 < t ? 5 * (1 - t) : 1
+            //   }).onComplete(function () {
+                v.removeChild(a)
+            //   }).start(),
+            v.addChild(a)
+          }, t = 0; t < 2; t++) {
+          e(t)
+        }
+      }
+      v.gotoAndPlay = function () {
+          v.timer && (clearInterval(v.timer),
+              v.timer = null),
+            h(),
+            v.timer = setInterval(h, 300)
+        },
+        v.stop = function () {
+          clearInterval(v.timer),
+            v.timer = null,
+            v.removeChildren()
+        };
+      var Y = "q3_a0",
+        K = "q3_a1",
+        Z = "q3_a2";
+      for (var g = [], x = 0; x < 44; x++) {
+        g.push(resources[x < 14 ? Y : x < 28 ? K : Z].textures["q3_a_000" + x + ".png"]);
+      }
+      var _ = new AnimatedSprite(g);
+      _.y = 674,
+        _.visible = !1,
+        _.animationSpeed = .3,
+        _.loop = !1;
+      var f = new Container;
+      f.visible = !1;
+      var y = Sprite.from(things02["q3_cloud1.png"]);
+      y.position.set(-135, 10);
+      var w = Sprite.from(things02["q3_cloud2.png"]);
+      w.position.set(96, 32);
+      var b = Sprite.from(things02["q3_sun.png"]);
+      b.pivot.set(72, 71),
+        b.position.set(124, 71),
+        // b.tween = new E.default.Tween({
+        //   rotate: 0
+        // }).to({
+        //   rotate: 2 * Math.PI
+        // }, 12e3).onUpdate(function (e, t) {
+        b.rotation = e.rotate
+      // }).repeat(1 / 0),
+      f.y = 500,
+        f.addChild(b, y, w),
+        f.gotoAndPlay = () => {
+          f.visible = !0,
+            // new E.default.Tween({
+            //   alpha: 0
+            // }).to({
+            //   alpha: 1
+            // }, 500).onUpdate(function (e, t) {
+            // f.alpha = e.alpha
+          // }).start(),
+          // new E.default.Tween({
+          //   x: 0
+          // }).to({
+          //   x: 1
+          // }, 1500).onUpdate(function (e, t) {
+          y.x = -135 - 90 * e.x,
+            w.x = 96 + 110 * e.x
+          // }).start(),
+          // b.tween.start()
+        },
+        f.stop = function () {
+          f.visible = !1
+            // b.tween.stop()
+        };
+      var X = new Container;
+      X.visible = !1;
+      var S = Sprite.from(things02["q3_cloud3.png"]);
+      S.position.set(18, 146);
+      var C = Sprite.from(things02["q3_cloud4.png"]);
+      C.position.set(124, 48);
+      var q = Sprite.from(things02["q3_moon.png"]);
+      q.position.set(44, 0),
+        X.y = 500,
+        X.addChild(q, S, C),
+        X.gotoAndPlay = () => {
+          X.visible = !0,
+            // new E.default.Tween({
+            //   alpha: 0
+            // }).to({
+            //   alpha: 1
+            // }, 500).onUpdate(function (e, t) {
+            // X.alpha = e.alpha
+          // }).start(),
+          // new E.default.Tween({
+          //   x: 0
+          // }).to({
+          //   x: 1
+          // }, 1500).onUpdate(function (e, t) {
+          S.x = 18 - 90 * e.x,
+            C.x = 124 + 110 * e.x
+          // }).start()
+        },
+        X.stop = function () {
+          X.visible = !1
+        };
+      for (var j = (t) => {
+          var a = new Container;
+          a.active = !1,
+            a.x = t % 2 * 230,
+            a.y = 310 * parseInt(t / 2);
+          var e = a.text = Sprite.from(things02["03_" + t + ".png"]),
+            n = a.chosen_bg = Sprite.from(things02["03_selection_bg.png"]);
+          n.visible = !1,
+            n.position.set(-18, 69),
+            0 == t ? a.ani = _ : 1 == t ? (a.addChild(v),
+              a.ani = v) : 2 == t ? a.ani = X : 3 == t && (a.ani = f),
+            a.addChild(n, e),
+            this.ut(a, () => {
+              var e = a;
+              1 != e.active && (this.mt(2, t),
+                m.children.forEach(function (e, t) {
+                  1 == e.active && (e.active = !1,
+                    e.ani.stop(),
+                    e.ani.visible = !1,
+                    e.chosen_bg.visible = !1)
+                }),
+                e.active = !0,
+                e.ani.visible = !0,
+                e.ani.gotoAndPlay(0),
+                e.chosen_bg.visible = !0)
+            }),
+            m.addChild(a)
+        }, A = 0; A < 4; A++)
+        j(A);
+      Te.addChild(m, _, f, X);
+      var M = Te.smoke = Sprite.from(resources['q3_a2'].textures["q3_smoke.png"]);
+      M.position.set(0, 438),
+        Te.addChild(M),
+        this.Te = Te,
+        this.app.stage.addChild(Te)
+    })();
 
     (function () {
-      for (var o = [Ae], i = [{
+      for (var o = [Ae, Me, Te], i = [{
           x: 265,
           y: 293
         }, {
@@ -545,7 +1032,6 @@ class LongPoem {
           x: 229,
           y: 953
         }], e = function (e) {
-          console.log(o, e, 'aaaaaaaaa')
           var t = o[e].notSelect = new Container;
           t.visible = !1;
           var a = Sprite.from(things02["not_icon.png"]),
@@ -573,7 +1059,7 @@ class LongPoem {
             o[e].addChild(t)
         }, t = 0; t < o.length; t++)
         e(t);
-        var Ne = new Container;
+      var Ne = new Container;
       var a = Ne.nameNotice = new Container;
       a.visible = !1;
       var n = Sprite.from(things02["not_icon.png"]),
@@ -734,13 +1220,12 @@ class LongPoem {
       })
   }
   mt(e, t) {
-    let De = [this.Ae.questions];
-    console.log(this.Ae.questions.parent === this.Ae)
+    let De = [this.Ae.questions, this.Me.questions, this.Te.questions];
     De[e].selected = !0,
       De[e].selectIndex = t,
       De[e].parent.notSelect.stop()
-      // _t.remove(De[e]),
-      // ht()
+    // _t.remove(De[e]),
+    // ht()
   }
 }
 
