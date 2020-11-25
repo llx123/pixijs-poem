@@ -1,0 +1,79 @@
+{"frames": {
+
+"a_00029.png":
+{
+	"frame": {"x":753,"y":1165,"w":748,"h":463},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":130,"w":748,"h":463},
+	"sourceSize": {"w":750,"h":950}
+},
+"a_00030.png":
+{
+	"frame": {"x":1,"y":1164,"w":750,"h":478},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":130,"w":750,"h":478},
+	"sourceSize": {"w":750,"h":950}
+},
+"a_00031.png":
+{
+	"frame": {"x":1505,"y":753,"w":750,"h":498},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":130,"w":750,"h":498},
+	"sourceSize": {"w":750,"h":950}
+},
+"a_00032.png":
+{
+	"frame": {"x":1505,"y":1,"w":750,"h":521},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":130,"w":750,"h":521},
+	"sourceSize": {"w":750,"h":950}
+},
+"a_00033.png":
+{
+	"frame": {"x":1,"y":618,"w":750,"h":544},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":130,"w":750,"h":544},
+	"sourceSize": {"w":750,"h":950}
+},
+"a_00034.png":
+{
+	"frame": {"x":753,"y":595,"w":750,"h":568},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":130,"w":750,"h":568},
+	"sourceSize": {"w":750,"h":950}
+},
+"a_00035.png":
+{
+	"frame": {"x":753,"y":1,"w":750,"h":592},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":130,"w":750,"h":592},
+	"sourceSize": {"w":750,"h":950}
+},
+"a_00036.png":
+{
+	"frame": {"x":1,"y":1,"w":750,"h":615},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":130,"w":750,"h":615},
+	"sourceSize": {"w":750,"h":950}
+}},
+"animations": {
+	"a": ["a_00029.png","a_00030.png","a_00031.png","a_00032.png","a_00033.png","a_00034.png","a_00035.png","a_00036.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "q5_q6_1.png",
+	"format": "RGBA8888",
+	"size": {"w":2027,"h":1643},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:78cae5e682c18c1d2272d728e59b366b:1cd0afd2b5f536651db4d2dd3dd67b51:3d7f662ace7bf2036788a302b242596e$"
+}
+}
