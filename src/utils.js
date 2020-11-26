@@ -59,3 +59,13 @@ export function renderLine(Container, resource, stage, Sprite, y) {
     stage.addChild(lineProp);
   return lineProp;
 }
+
+export function setSpriteProp(sprite, prop) {
+  for (let key in prop) {
+    if (typeof prop[key] === 'object') {
+      setSpriteProp(sprite[key], prop[key])
+    } else {
+      sprite[key] = prop[key];
+    }
+  }
+}

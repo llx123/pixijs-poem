@@ -1,8 +1,15 @@
 import {
   addSprite,
   renderLine,
-  addSpriteWithData
+  addSpriteWithData,
+  setSpriteProp
 } from './utils';
+import {
+  questionOrnament
+} from './question-ornament';
+import {
+  sceneList
+} from './scene-config';
 import {
   AnimatedSprite,
   Application,
@@ -31,6 +38,7 @@ class LongPoem {
     this.scrollStep = -1;
     this.pageHeight = 9e3;
     this.animateList = [];
+    this.sprites = {}
   }
   initScene() {
     const {
@@ -53,7 +61,7 @@ class LongPoem {
     loader
       .add('bg1', 'static/bg1.jpg')
       .add('bg2', 'static/bg2.jpg')
-      .add('static/things_02.json')
+      .add('things_02', 'static/things_02.json')
       .add('static/tengman01.json')
       .add('static/tengman02.json')
       .add('static/first_person.json')
@@ -95,11 +103,10 @@ class LongPoem {
       .load(this.setup.bind(this))
   }
   setup(loader) {
-    let firstScene = new Container();
+    let firstScene = this.sprites['firstScene'] = new Container();
 
     let resources = loader.resources;
-    let things02 = resources['static/things_02.json'].textures;
-
+    let things02 = resources['things_02'].textures;
     // 背景图
     for (var e = 0; e < 5; e++) {
       var t = Sprite.from(resources.bg1.texture),
@@ -111,6 +118,17 @@ class LongPoem {
 
 
     let tree = Sprite.from(things02['first_tree.png']);
+    // render by config
+    sceneList.map((item) => {
+      let sprite;
+      if (item.type === 'sprite') {
+        sprite = Sprite.from(resources[item.filename].textures[item.name]);
+        item.prop && setSpriteProp(sprite, item.prop);
+      }
+
+      sprite && this.sprites[item.parent].addChild(sprite);     
+      console.log(sprite.position);
+    })
     let people2 = Sprite.from(things02['people2.png']);
     people2.y = 450;
 
@@ -157,12 +175,14 @@ class LongPoem {
       slide_text = Sprite.from(things02["slide_text.png"]);
     slide_text.y = 64;
     firstAnimate.addChild(icon, slide_text);
-    let max = new TweenMax.fromTo(icon, 0.5, {
+    let max = new TweenMax.fromTo(icon, 0.8, {
       y: 0,
     }, {
-      y: -30
+      y: -30,
+      yoyo: true,
+      yoyoEase: true,
+      repeat: -1
     })
-    max.yoyo(true).repeat(-1)
     icon.x = 80;
 
     firstAnimate.position.set(272, this.height - 285);
@@ -222,7 +242,7 @@ class LongPoem {
         _this.animateStep1.visible = false)
     };
 
-    firstScene.addChild(people2, tree, firstContainer, animateTeng1, animateGirl, this.animateStep1, this.animateStep2, newAnimPerson1, firstAnimate);
+    firstScene.addChild(people2, firstContainer, animateTeng1, animateGirl, this.animateStep1, this.animateStep2, newAnimPerson1, firstAnimate);
     addSprite({
       box: firstScene,
       resource: things02,
@@ -240,324 +260,166 @@ class LongPoem {
     this.app.stage.addChild(firstScene);
 
     this.lineProp = renderLine(Container, things02, this.app.stage, Sprite, this.height);
-    // test开始
+
+    // 01-questions 
     var Ae = new Container;
-    Ae.y = this.height;
-    var e = [];
-    for (var t = 0; t < 57; t++) {
-      e.push(resources['01_leaf1'].textures["2_000" + (t < 10 ? "0" + t : t) + ".png"])
-    }
-    var a = new AnimatedSprite(e);
-    a.animationSpeed = .3,
-      a.x = 515,
-      a.play();
-    for (var n = [], o = 0; o < 47; o++) {
-      n.push(resources['01_leaf2'].textures["a_000" + (o < 10 ? "0" + o : o) + ".png"])
-    }
-    var i = new AnimatedSprite(n);
-    i.animationSpeed = .28,
-      i.y = 409,
-      i.play()
-    Ae.addChild(a, i);
-    addSprite({
-      box: Ae,
-      resource: things02,
-      img: [{
-        name: "01_title.png",
-        x: 236,
-        y: 317
-      }, {
-        name: "01_right_leaf.png",
-        x: 675,
-        y: 154
-      }, {
-        name: "01_flower.png",
-        x: 461,
-        y: 1210
-      }]
-    }, Sprite);
+    (() => {
+      Ae.y = this.height;
+      var e = [];
+      for (var t = 0; t < 57; t++) {
+        e.push(resources['01_leaf1'].textures["2_000" + (t < 10 ? "0" + t : t) + ".png"])
+      }
+      var a = new AnimatedSprite(e);
+      a.animationSpeed = .3,
+        a.x = 515,
+        a.play();
+      for (var n = [], o = 0; o < 47; o++) {
+        n.push(resources['01_leaf2'].textures["a_000" + (o < 10 ? "0" + o : o) + ".png"])
+      }
+      var i = new AnimatedSprite(n);
+      i.animationSpeed = .28,
+        i.y = 409,
+        i.play()
+      Ae.addChild(a, i);
+      addSprite({
+        box: Ae,
+        resource: things02,
+        img: [{
+          name: "01_title.png",
+          x: 236,
+          y: 317
+        }, {
+          name: "01_right_leaf.png",
+          x: 675,
+          y: 154
+        }, {
+          name: "01_flower.png",
+          x: 461,
+          y: 1210
+        }]
+      }, Sprite);
 
-    addSpriteWithData({
-      box: Ae,
-      resource: things02,
-      img: [{
-        name: "01_leaf_1.png",
-        x: 35,
-        y: 90,
-        data: [{
-          startStamp: 100,
-          endStamp: 1600,
-          start: {
-            x: 35,
-            y: 90,
-            rotation: .01
-          },
-          end: {
-            x: 135,
-            y: 290,
-            rotation: -Math.PI / 180 * 30
-          }
-        }]
-      }, {
-        name: "01_leaf_2.png",
-        x: 50,
-        y: 71,
-        data: [{
-          startStamp: 100,
-          endStamp: 2e3,
-          start: {
-            x: 50,
-            y: 71,
-            rotation: .01
-          },
-          end: {
-            x: 60,
-            y: 271,
-            rotation: Math.PI / 180 * 30
-          }
-        }]
-      }, {
-        name: "01_leaf_3.png",
-        x: 122,
-        y: 154,
-        data: [{
-          startStamp: 100,
-          endStamp: 2e3,
-          start: {
-            x: 122,
-            y: 154,
-            rotation: .01
-          },
-          end: {
-            x: 522,
-            y: 254,
-            rotation: -Math.PI / 180 * 30
-          }
-        }]
-      }, {
-        name: "01_leaf_4.png",
-        x: 700,
-        y: 749,
-        data: [{
-          startStamp: 600,
-          endStamp: 2500,
-          start: {
-            x: 700,
-            y: 749,
-            rotation: Math.PI / 180 * 10
-          },
-          end: {
-            x: 500,
-            y: 800,
-            rotation: Math.PI / 180 * 30
-          }
-        }]
-      }, {
-        name: "01_leaf_5.png",
-        x: 611,
-        y: 916,
-        data: [{
-          startStamp: 600,
-          endStamp: 2500,
-          start: {
-            x: 711,
-            y: 816,
-            rotation: .01
-          },
-          end: {
-            x: 460,
-            y: 1016,
-            rotation: Math.PI / 180 * 20
-          }
-        }]
-      }, {
-        name: "01_leaf_6.png",
-        x: 625,
-        y: 929,
-        data: [{
-          startStamp: 600,
-          endStamp: 2500,
-          start: {
-            x: 525,
-            y: 829,
-            rotation: .01
-          },
-          end: {
-            x: 725,
-            y: 1029,
-            rotation: -Math.PI / 180 * 20
-          }
-        }]
-      }, {
-        name: "01_leaf_7.png",
-        x: 665,
-        y: 1003,
-        data: [{
-          startStamp: 600,
-          endStamp: 2800,
-          start: {
-            x: 665,
-            y: 953
-          },
-          end: {
-            x: 645,
-            y: 1083
-          }
-        }]
-      }, {
-        name: "01_leaf_8.png",
-        x: 56,
-        y: 1210,
-        data: [{
-          startStamp: 1e3,
-          endStamp: 3e3,
-          start: {
-            x: 156,
-            y: 1110,
-            rotation: .01
-          },
-          end: {
-            x: -30,
-            y: 1310,
-            rotation: Math.PI / 180 * 30
-          }
-        }]
-      }, {
-        name: "01_leaf_9.png",
-        x: 680,
-        y: 288,
-        data: [{
-          startStamp: 100,
-          endStamp: 1600,
-          start: {
-            x: 680,
-            y: 258,
-            rotation: .01
-          },
-          end: {
-            x: 680,
-            y: 288,
-            rotation: -Math.PI / 180 * 10
-          }
-        }]
-      }]
-    }, Sprite)
+      addSpriteWithData({
+        box: Ae,
+        resource: things02,
+        img: questionOrnament.q1
+      }, Sprite)
 
-    for (var s = [], r = 0; r < 45; r++) {
-      s.push(resources['static/q1_1.json'].textures["a_000" + (r < 10 ? "0" + r : r) + ".png"]);
-    }
-    var d = new AnimatedSprite(s);
-    d.position.set(-70, -65),
-      d.animationSpeed = .3;
-    d.play();
-    var p = new Container();
-    p.play = function () {
-      console.log('play');
-    }
-    p.stop = function () {
-      console.log('stop');
-    }
-    for (var c = [], u = 0; u < 60; u++)
-      c.push(resources['static/q1_2.json'].textures["C_000" + (u < 10 ? "0" + u : u) + ".png"]);
-    var m = new AnimatedSprite(c);
-    m.position.set(-150, 30),
-      m.animationSpeed = .3;
-    for (var v = [], h = 0; h < 61; h++)
-      v.push(resources['static/q1_2.json'].textures["D_000" + (h < 10 ? "0" + h : h) + ".png"]);
-    var g = new AnimatedSprite(v);
-    g.position.set(280, -120),
-      g.animationSpeed = .3;
+      for (var s = [], r = 0; r < 45; r++) {
+        s.push(resources['static/q1_1.json'].textures["a_000" + (r < 10 ? "0" + r : r) + ".png"]);
+      }
+      var d = new AnimatedSprite(s);
+      d.position.set(-70, -65),
+        d.animationSpeed = .3;
+      d.play();
+      var p = new Container();
+      p.play = function () {
+        console.log('play');
+      }
+      p.stop = function () {
+        console.log('stop');
+      }
+      for (var c = [], u = 0; u < 60; u++)
+        c.push(resources['static/q1_2.json'].textures["C_000" + (u < 10 ? "0" + u : u) + ".png"]);
+      var m = new AnimatedSprite(c);
+      m.position.set(-150, 30),
+        m.animationSpeed = .3;
+      for (var v = [], h = 0; h < 61; h++)
+        v.push(resources['static/q1_2.json'].textures["D_000" + (h < 10 ? "0" + h : h) + ".png"]);
+      var g = new AnimatedSprite(v);
+      g.position.set(280, -120),
+        g.animationSpeed = .3;
 
-    var x = new Container,
-      _ = Sprite.from(things02["01_left_kuo.png"]),
-      f = Sprite.from(things02["01_right_kuo.png"]);
-    x.addChild(_, f),
-      _.x = -50,
-      _.visible = !1,
-      f.visible = !1;
-    var y = Ae.questions = new Container;
-    y.scrollY = 1450,
-      y.selected = !1,
-      y.addChild(x),
-      y.position.set(263, 490);
+      var x = new Container,
+        _ = Sprite.from(things02["01_left_kuo.png"]),
+        f = Sprite.from(things02["01_right_kuo.png"]);
+      x.addChild(_, f),
+        _.x = -50,
+        _.visible = !1,
+        f.visible = !1;
+      var y = Ae.questions = new Container;
+      y.scrollY = 1450,
+        y.selected = !1,
+        y.addChild(x),
+        y.position.set(263, 490);
 
-    // 01-questions
-    for (var w = [d, p, m, g], b = (n) => {
-        var o = new Container;
-        o.select = !1,
-          o.y = 210 * n,
-          o.addChild(w[n]),
-          w[n].visible = !1,
-          o.ani = w[n];
-        var e = o.textBg = Sprite.from(things02["01_text_bg.png"]);
-        e.x = -5,
-          e.visible = !1;
-        var t = o.text = Sprite.from(things02["01_t" + (n + 1) + ".png"]);
-        if (3 == n) {
-          var a = o.flower = Sprite.from(things02["01_3_flower.png"]);
-          a.visible = !1,
-            a.position.set(-112, -73),
-            o.addChild(a)
-        }
-        this.ut(t, () => {
-            var e = o;
-            if (1 != e.active)
-              if (this.mt(0, n),
-                y.children.forEach(function (e, t) {
-                  1 == e.active && (e.active = !1,
-                    e.ani.stop(),
-                    e.ani.visible = !1,
-                    e.textBg.visible = !1,
-                    4 == t && (e.flower.visible = !1))
-                }),
-                e.active = !0,
-                e.ani.play(),
-                e.ani.visible = !0,
-                e.textBg.visible = !0,
-                3 == n && (e.flower.visible = !0),
-                0 == _.visible)
-                _.visible = !0,
-                f.visible = !0,
-                // new E.default.Tween({
-                //   alpha: 0
-                // }).to({
-                //   alpha: 1
-                // }, 300).onUpdate(function (e, t) {
-                //   _.alpha = e.alpha,
-                //     f.alpha = e.alpha
-                // }).start(),
-                _.y = 210 * n - 20,
-                f.y = 210 * n - 20,
-                f.x = 0 == n ? 429 : 340;
-              else {
-                var t, a = 210 * n - 20;
-                t = 0 == n ? 429 : 340,
+      for (var w = [d, p, m, g], b = (n) => {
+          var o = new Container;
+          o.select = !1,
+            o.y = 210 * n,
+            o.addChild(w[n]),
+            w[n].visible = !1,
+            o.ani = w[n];
+          var e = o.textBg = Sprite.from(things02["01_text_bg.png"]);
+          e.x = -5,
+            e.visible = !1;
+          var t = o.text = Sprite.from(things02["01_t" + (n + 1) + ".png"]);
+          if (3 == n) {
+            var a = o.flower = Sprite.from(things02["01_3_flower.png"]);
+            a.visible = !1,
+              a.position.set(-112, -73),
+              o.addChild(a)
+          }
+          this.ut(t, () => {
+              var e = o;
+              if (1 != e.active)
+                if (this.mt(0, n),
+                  y.children.forEach(function (e, t) {
+                    1 == e.active && (e.active = !1,
+                      e.ani.stop(),
+                      e.ani.visible = !1,
+                      e.textBg.visible = !1,
+                      4 == t && (e.flower.visible = !1))
+                  }),
+                  e.active = !0,
+                  e.ani.play(),
+                  e.ani.visible = !0,
+                  e.textBg.visible = !0,
+                  3 == n && (e.flower.visible = !0),
+                  0 == _.visible)
+                  _.visible = !0,
+                  f.visible = !0,
                   // new E.default.Tween({
-                  //   y: _.y
+                  //   alpha: 0
                   // }).to({
-                  //   y: a
+                  //   alpha: 1
                   // }, 300).onUpdate(function (e, t) {
-                  _.y = e.y,
-                  f.y = e.y
-                // }).start(),
-                // new E.default.Tween({
-                //   x: f.x
-                // }).to({
-                //   x: t
-                // }, 300).onUpdate(function (e, t) {
-                //   f.x = e.x
-                // }).start()
-              }
-          }),
-          o.addChild(e, t),
-          y.addChild(o)
-      }, X = 0; X < 4; X++) {
-      b(X);
-    }
+                  //   _.alpha = e.alpha,
+                  //     f.alpha = e.alpha
+                  // }).start(),
+                  _.y = 210 * n - 20,
+                  f.y = 210 * n - 20,
+                  f.x = 0 == n ? 429 : 340;
+                else {
+                  var t, a = 210 * n - 20;
+                  t = 0 == n ? 429 : 340,
+                    // new E.default.Tween({
+                    //   y: _.y
+                    // }).to({
+                    //   y: a
+                    // }, 300).onUpdate(function (e, t) {
+                    _.y = e.y,
+                    f.y = e.y
+                  // }).start(),
+                  // new E.default.Tween({
+                  //   x: f.x
+                  // }).to({
+                  //   x: t
+                  // }, 300).onUpdate(function (e, t) {
+                  //   f.x = e.x
+                  // }).start()
+                }
+            }),
+            o.addChild(e, t),
+            y.addChild(o)
+        }, X = 0; X < 4; X++) {
+        b(X);
+      }
 
-    this.Ae = Ae;
-    Ae.addChild(y)
-    this.app.stage.addChild(Ae);
+      this.Ae = Ae;
+      Ae.addChild(y)
+      this.app.stage.addChild(Ae);
+    })();
     // 02-questions
     var Me = new Container,
       Ve = this.height;
@@ -736,93 +598,7 @@ class LongPoem {
         addSpriteWithData({
           box: Te,
           resource: things02,
-          img: [{
-            name: "03_leaf_1_1.png",
-            x: 128,
-            y: 485,
-            data: [{
-              startStamp: 3200,
-              endStamp: 5e3,
-              start: {
-                x: 128,
-                y: 485,
-                rotation: .01
-              },
-              end: {
-                x: 178,
-                y: 885,
-                rotation: -Math.PI / 180 * 20
-              }
-            }]
-          }, {
-            name: "03_leaf_1_2.png",
-            x: 136,
-            y: 504,
-            data: [{
-              startStamp: 3200,
-              endStamp: 5e3,
-              start: {
-                x: 136,
-                y: 504,
-                rotation: .01
-              },
-              end: {
-                x: 386,
-                y: 804,
-                rotation: Math.PI / 180 * 30
-              }
-            }]
-          }, {
-            name: "03_leaf_1_3.png",
-            x: 43,
-            y: 568,
-            data: [{
-              startStamp: 3200,
-              endStamp: 5e3,
-              start: {
-                x: 43,
-                y: 568,
-                rotation: .01
-              },
-              end: {
-                x: -57,
-                y: 768,
-                rotation: Math.PI / 180 * 10
-              }
-            }]
-          }, {
-            name: "03_leaf_3.png",
-            x: 120,
-            y: 1634,
-            data: [{
-              startStamp: 4200,
-              endStamp: 6e3,
-              start: {
-                x: 20,
-                y: 1534
-              },
-              end: {
-                x: 220,
-                y: 1834
-              }
-            }]
-          }, {
-            name: "03_leaf_4.png",
-            x: 100,
-            y: 1534,
-            data: [{
-              startStamp: 4200,
-              endStamp: 6e3,
-              start: {
-                x: 200,
-                y: 1434
-              },
-              end: {
-                x: 0,
-                y: 1734
-              }
-            }]
-          }]
+          img: questionOrnament.q3
         }, Sprite);
       for (var e = [], t = 0; t < 50; t++)
         e.push(resources['q3_leaf1'].textures["q3_leaf1_000" + t + ".png"]);
@@ -1050,73 +826,7 @@ class LongPoem {
         addSpriteWithData({
           box: $e,
           resource: things02,
-          img: [{
-            name: "04_leaf_0.png",
-            x: 55,
-            y: 408,
-            data: [{
-              startStamp: 4500,
-              endStamp: 6200,
-              start: {
-                x: 55,
-                y: 408
-              },
-              end: {
-                x: 45,
-                y: 588
-              }
-            }]
-          }, {
-            name: "04_leaf_1.png",
-            x: 39,
-            y: 427,
-            data: [{
-              startStamp: 4500,
-              endStamp: 6200,
-              start: {
-                x: 39,
-                y: 427
-              },
-              end: {
-                x: -20,
-                y: 727
-              }
-            }]
-          }, {
-            name: "04_leaf_2.png",
-            x: 651,
-            y: 1345,
-            data: [{
-              startStamp: 5200,
-              endStamp: 7e3,
-              start: {
-                x: 491,
-                y: 1145
-              },
-              end: {
-                x: 651,
-                y: 1445
-              }
-            }]
-          }, {
-            name: "04_leaf_3.png",
-            x: 59,
-            y: 1461,
-            data: [{
-              startStamp: 5200,
-              endStamp: 7e3,
-              start: {
-                x: 200,
-                y: 1261,
-                rotation: .01
-              },
-              end: {
-                x: -50,
-                y: 1511,
-                rotation: Math.PI / 180 * 15
-              }
-            }]
-          }]
+          img: questionOrnament.q4
         }, Sprite);
       for (var e = [], t = 0; t < 50; t++)
         e.push(resources['0405_leaf'].textures["4_leaf_000" + t + ".png"]);
@@ -1237,183 +947,7 @@ class LongPoem {
         addSpriteWithData({
           box: Ee,
           resource: things02,
-          img: [{
-            name: "05_leaf_1.png",
-            x: 529,
-            y: 737,
-            data: [{
-              startStamp: 5800,
-              endStamp: 7500,
-              start: {
-                x: 379,
-                y: 537
-              },
-              end: {
-                x: 529,
-                y: 737
-              }
-            }]
-          }, {
-            name: "05_leaf_2.png",
-            x: 189,
-            y: 1064,
-            data: [{
-              startStamp: 6200,
-              endStamp: 8200,
-              start: {
-                x: 139,
-                y: 984
-              },
-              end: {
-                x: 239,
-                y: 1144
-              }
-            }]
-          }, {
-            name: "05_leaf_3.png",
-            x: 40,
-            y: 1290,
-            data: [{
-              startStamp: 6200,
-              endStamp: 8200,
-              start: {
-                x: 40,
-                y: 1200
-              },
-              end: {
-                x: 50,
-                y: 1400
-              }
-            }]
-          }, {
-            name: "05_leaf_4.png",
-            x: 208,
-            y: 1440,
-            data: [{
-              startStamp: 6200,
-              endStamp: 8200,
-              start: {
-                x: 308,
-                y: 1340
-              },
-              end: {
-                x: 108,
-                y: 1640
-              }
-            }]
-          }, {
-            name: "cloud1.png",
-            x: 516,
-            y: 467,
-            data: [{
-              startStamp: 5900,
-              endStamp: 6800,
-              start: {
-                x: 516
-              },
-              end: {
-                x: 616
-              }
-            }]
-          }, {
-            name: "cloud2.png",
-            x: 436,
-            y: 533,
-            data: [{
-              startStamp: 5900,
-              endStamp: 6800,
-              start: {
-                x: 436
-              },
-              end: {
-                x: 556
-              }
-            }]
-          }, {
-            name: "cloud3.png",
-            x: -40,
-            y: 568,
-            data: [{
-              startStamp: 5900,
-              endStamp: 7200,
-              start: {
-                x: -40
-              },
-              end: {
-                x: -120
-              }
-            }]
-          }, {
-            name: "cloud4.png",
-            x: 505,
-            y: 585,
-            data: [{
-              startStamp: 5900,
-              endStamp: 7200,
-              start: {
-                x: 505
-              },
-              end: {
-                x: 608
-              }
-            }]
-          }, {
-            name: "cloud5.png",
-            x: 380,
-            y: 667,
-            data: [{
-              startStamp: 5900,
-              endStamp: 7200,
-              start: {
-                x: 380
-              },
-              end: {
-                x: 300
-              }
-            }]
-          }, {
-            name: "cloud7.png",
-            x: 457,
-            y: 725,
-            data: [{
-              startStamp: 5900,
-              endStamp: 7200,
-              start: {
-                x: 457
-              },
-              end: {
-                x: 575
-              }
-            }]
-          }, {
-            name: "cloud8.png",
-            x: 573,
-            y: 1018,
-            data: [{
-              startStamp: 6400,
-              endStamp: 7800,
-              start: {
-                x: 573
-              },
-              end: {
-                x: 650
-              }
-            }]
-          }, {
-            name: "cloud9.png",
-            x: -160,
-            y: 1389,
-            data: [{
-              startStamp: 6600,
-              endStamp: 8200,
-              start: {
-                x: -160
-              },
-              end: {
-                x: -250
-              }
-            }]
-          }]
+          img: questionOrnament.q5
         }, Sprite);
       var u = Ee.questions = new Container;
       u.selected = !1,
@@ -1482,7 +1016,7 @@ class LongPoem {
                     //   a.ani.alpha = e.alpha,
                     //     a.text.alpha = 1 - e.alpha
                     // }).onComplete(function () {
-                      a.ani.visible = !1
+                    a.ani.visible = !1
                     // }).start()
                   )
                 }),
@@ -1541,73 +1075,7 @@ class LongPoem {
         addSpriteWithData({
           box: Ie,
           resource: things02,
-          img: [{
-            name: "06_leaf_0.png",
-            x: 100,
-            y: 1300,
-            data: [{
-              startStamp: 8e3,
-              endStamp: 1e4,
-              start: {
-                x: 100,
-                y: 1300
-              },
-              end: {
-                x: -30,
-                y: 1430
-              }
-            }]
-          }, {
-            name: "06_leaf_1.png",
-            x: 84,
-            y: 1340,
-            data: [{
-              startStamp: 8e3,
-              endStamp: 1e4,
-              start: {
-                x: 84,
-                y: 1340
-              },
-              end: {
-                x: 24,
-                y: 1540
-              }
-            }]
-          }, {
-            name: "06_leaf_2.png",
-            x: 686,
-            y: 1540,
-            data: [{
-              startStamp: 8200,
-              endStamp: 1e4,
-              start: {
-                x: 586,
-                y: 1490,
-                rotation: .01
-              },
-              end: {
-                x: 786,
-                y: 1590,
-                rotation: Math.PI / 180 * -30
-              }
-            }]
-          }, {
-            name: "06_leaf_3.png",
-            x: 199,
-            y: 1870,
-            data: [{
-              startStamp: 8500,
-              endStamp: 11e3,
-              start: {
-                x: 249,
-                y: 1870
-              },
-              end: {
-                x: 149,
-                y: 2020
-              }
-            }]
-          }]
+          img: questionOrnament.q6
         }, Sprite);
       var ue = '06_leaf',
         ne = 'q5_q6_0',
