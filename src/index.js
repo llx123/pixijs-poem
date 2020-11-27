@@ -51,8 +51,8 @@ class LongPoem {
       height: height,
       backgroundColor: 16711673
     });
+    this.sprites.stage = this.app.stage;
     // this.app.stage.scale.set(scale, scale); 这个方法模糊会导致模糊 更改使用viewport
-    // 加入场景
     document.querySelector('#app').appendChild(this.app.view);
     this.load();
   }
@@ -103,71 +103,30 @@ class LongPoem {
       .load(this.setup.bind(this))
   }
   setup(loader) {
-    let firstScene = this.sprites['firstScene'] = new Container();
+    let resources = loader.resources,
+      things02 = resources['things_02'].textures;
 
-    let resources = loader.resources;
-    let things02 = resources['things_02'].textures;
-    // 背景图
-    for (var e = 0; e < 5; e++) {
-      var t = Sprite.from(resources.bg1.texture),
-        a = Sprite.from(resources.bg2.texture);
-      t.y = 2945 * e * 2,
-        a.y = 2945 * (2 * e + 1),
-        firstScene.addChild(t, a)
-    }
-
-
-    let tree = Sprite.from(things02['first_tree.png']);
     // render by config
     sceneList.map((item) => {
       let sprite;
-      if (item.type === 'sprite') {
+      const {
+        id,
+        type,
+        parent
+      } = item;
+      if (type === 'sprite') {
         sprite = Sprite.from(resources[item.filename].textures[item.name]);
-        item.prop && setSpriteProp(sprite, item.prop);
+      } else if (type === 'container') {
+        sprite = new Container();
+      } else if (type === 'callback') {
+        item.render(this.sprites[parent], resources);
       }
-
-      sprite && this.sprites[item.parent].addChild(sprite);     
-      console.log(sprite.position);
+      if (sprite) {
+        id && (this.sprites[id] = sprite);
+        item.prop && setSpriteProp(sprite, item.prop);
+        parent && this.sprites[parent].addChild(sprite);
+      }
     })
-    let people2 = Sprite.from(things02['people2.png']);
-    people2.y = 450;
-
-    let firstContainer = new Container();
-    firstContainer.x = 245;
-    firstContainer.y = 222;
-    var title = Sprite.from(things02["first_title.png"]);
-    title.y = 54;
-    var logo = Sprite.from(things02["first_logo.png"]),
-      text = Sprite.from(things02["first_text.png"]);
-    text.y = 594;
-    // 红色黑的的点
-    var points = new Container;
-    for (var n = 0; n < 9; n++) {
-      var m = new Container,
-        v = m.blackDot = Sprite.from(things02["black_dot.png"]),
-        h = m.redDot = Sprite.from(things02["red_dot.png"])
-      h.visible = false,
-        m.x = n % 3 * 78,
-        m.y = 78 * parseInt(n / 3),
-        m.addChild(v, h),
-        points.addChild(m)
-    }
-    points.children[0].blackDot.visible = false,
-      points.children[0].redDot.visible = true;
-    var dotNum = 0,
-      x = 0;
-    setInterval(function () {
-        points.children[dotNum].blackDot.visible = true,
-          points.children[dotNum].redDot.visible = false,
-          x = dotNum,
-          dotNum = parseInt(9 * Math.random()),
-          x == dotNum && (dotNum = parseInt(9 * Math.random()),
-            x = dotNum),
-          points.children[dotNum].blackDot.visible = false,
-          points.children[dotNum].redDot.visible = true
-      }, 300),
-      points.position.set(180, 395),
-      firstContainer.addChild(points, title, text, logo);
 
     // 第一屏动画
     let firstAnimate = new Container(),
@@ -186,9 +145,9 @@ class LongPoem {
     icon.x = 80;
 
     firstAnimate.position.set(272, this.height - 285);
-    this.height < 1334 && (firstContainer.pivot.set(60, 0),
-      firstContainer.x = 305,
-      firstContainer.scale.set(1 - (1334 - this.height) / 1e3),
+    this.height < 1334 && (this.sprites.firstContainer.pivot.set(60, 0),
+      this.sprites.firstContainer.x = 305,
+      this.sprites.firstContainer.scale.set(1 - (1334 - this.height) / 1e3),
       firstAnimate.position.set(272, this.height - 225));
     // 藤蔓一
     var a = [];
@@ -242,9 +201,9 @@ class LongPoem {
         _this.animateStep1.visible = false)
     };
 
-    firstScene.addChild(people2, firstContainer, animateTeng1, animateGirl, this.animateStep1, this.animateStep2, newAnimPerson1, firstAnimate);
+    this.sprites.firstScene.addChild(animateTeng1, animateGirl, this.animateStep1, this.animateStep2, newAnimPerson1, firstAnimate);
     addSprite({
-      box: firstScene,
+      box: this.sprites.firstScene,
       resource: things02,
       img: [{
         name: "first_grass.png",
@@ -257,7 +216,7 @@ class LongPoem {
       }]
     }, Sprite);
 
-    this.app.stage.addChild(firstScene);
+    this.app.stage.addChild(this.sprites.firstScene);
 
     this.lineProp = renderLine(Container, things02, this.app.stage, Sprite, this.height);
 
