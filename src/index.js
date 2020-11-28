@@ -62,9 +62,9 @@ class LongPoem {
       .add('bg1', 'static/bg1.jpg')
       .add('bg2', 'static/bg2.jpg')
       .add('things_02', 'static/things_02.json')
-      .add('static/tengman01.json')
-      .add('static/tengman02.json')
-      .add('static/first_person.json')
+      .add('tengman01', 'static/tengman01.json')
+      .add('tengman02', 'static/tengman02.json')
+      .add('first_person', 'static/first_person.json')
       .add('static/q1_person_0.json')
       .add('static/q1_person_1.json')
       .add('static/q1_1.json')
@@ -112,14 +112,37 @@ class LongPoem {
       const {
         id,
         type,
-        parent
+        parent,
+        to,
       } = item;
       if (type === 'sprite') {
-        sprite = Sprite.from(resources[item.filename].textures[item.name]);
+        if (Array.isArray(item.nameList)) {
+          item.nameList.map(name => {
+            let sp = Sprite.from(resources[item.filename].textures[name.name])
+            name.prop && setSpriteProp(sp, name.prop);
+            parent && this.sprites[parent].addChild(sp);
+          })
+        } else {
+          sprite = Sprite.from(resources[item.filename].textures[item.name]);
+        }
+        if (to) {
+          TweenMax.to(sprite, 1, to);
+        }
       } else if (type === 'container') {
         sprite = new Container();
       } else if (type === 'callback') {
         item.render(this.sprites[parent], resources);
+      } else if (type === 'animate') {
+        let arr = [],
+          boundary = item.boundary || item.range[1];
+        for (let n = item.range[0]; n < item.range[1]; n++) {
+          n < boundary ?
+            arr.push(resources[item.filename].textures[`${item.texture}${n}.png`]) :
+            arr.push(resources[item.filenameBoundary].textures[`${item.textureBoundary}${n}.png`]);
+        }
+        sprite = new AnimatedSprite(arr);
+        sprite.animationSpeed = item.speed;
+        item.autoPlay && sprite.play();
       }
       if (sprite) {
         id && (this.sprites[id] = sprite);
@@ -128,44 +151,7 @@ class LongPoem {
       }
     })
 
-    // 第一屏动画
-    let firstAnimate = new Container(),
-      icon = Sprite.from(things02["slide_icon.png"]),
-      slide_text = Sprite.from(things02["slide_text.png"]);
-    slide_text.y = 64;
-    firstAnimate.addChild(icon, slide_text);
-    let max = new TweenMax.fromTo(icon, 0.8, {
-      y: 0,
-    }, {
-      y: -30,
-      yoyo: true,
-      yoyoEase: true,
-      repeat: -1
-    })
-    icon.x = 80;
-
-    firstAnimate.position.set(272, this.height - 285);
-    this.height < 1334 && (this.sprites.firstContainer.pivot.set(60, 0),
-      this.sprites.firstContainer.x = 305,
-      this.sprites.firstContainer.scale.set(1 - (1334 - this.height) / 1e3),
-      firstAnimate.position.set(272, this.height - 225));
-    // 藤蔓一
-    var a = [];
-    for (var n = 0; n < 60; n++) {
-      n < 30 ? a.push(resources['static/tengman01.json'].textures["tengman_000" + n + ".png"]) : a.push(resources['static/tengman02.json'].textures["tengman_000" + n + ".png"]);
-    }
-    var animateTeng1 = new AnimatedSprite(a);
-    animateTeng1.animationSpeed = .4;
-    animateTeng1.play();
-    // 少女荡秋千
-    var s = [];
-    for (var n = 0; n < 76; n++) {
-      s.push(resources['static/first_person.json'].textures[`a_000${n}.png`]);
-    }
-    var animateGirl = new AnimatedSprite(s);
-    animateGirl.position.set(420, 58)
-    animateGirl.animationSpeed = .4
-    animateGirl.play();
+    this.height < 1334 && this.setScale();
 
     // 人物一动画
     this.qPerson = [];
@@ -201,22 +187,7 @@ class LongPoem {
         _this.animateStep1.visible = false)
     };
 
-    this.sprites.firstScene.addChild(animateTeng1, animateGirl, this.animateStep1, this.animateStep2, newAnimPerson1, firstAnimate);
-    addSprite({
-      box: this.sprites.firstScene,
-      resource: things02,
-      img: [{
-        name: "first_grass.png",
-        x: 667,
-        y: 1006
-      }, {
-        name: "music.png",
-        x: 557,
-        y: this.height - 120
-      }]
-    }, Sprite);
-
-    this.app.stage.addChild(this.sprites.firstScene);
+    this.sprites.firstScene.addChild(this.animateStep1, this.animateStep2, newAnimPerson1);
 
     this.lineProp = renderLine(Container, things02, this.app.stage, Sprite, this.height);
 
@@ -1343,6 +1314,12 @@ class LongPoem {
       De[e].parent.notSelect.stop()
     // _t.remove(De[e]),
     // ht()
+  }
+  setScale() {
+    this.sprites.firstContainer.pivot.set(60, 0)
+    this.sprites.firstContainer.x = 305
+    this.sprites.firstContainer.scale.set(1 - (1334 - this.height) / 1e3)
+    this.sprites.firstAnimate.position.set(272, this.height - 225)
   }
 }
 
