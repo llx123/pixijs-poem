@@ -11,7 +11,7 @@ export function addSprite(options, Sprite) {
   }
 }
 
-export function addSpriteWithData(options, Sprite) {
+export function addSpriteWithData(options, Sprite, ze) {
   for (var t = options.box, img = options.img, resource = options.resource, index = 0; index < img.length; index++) {
     var i = t[img[index].name] = Sprite.from(resource[img[index].name]);
     if (i.data = img[index].data,
@@ -25,6 +25,7 @@ export function addSpriteWithData(options, Sprite) {
         }
     }
     t.addChild(i);
+    ze && ze.push(i)
   }
 }
 

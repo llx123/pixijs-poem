@@ -38,6 +38,7 @@ class LongPoem {
     this.scrollStep = -1;
     this.pageHeight = 9e3;
     this.animateList = [];
+    this.ze = [];
     this.sprites = {}
   }
   initScene() {
@@ -65,10 +66,10 @@ class LongPoem {
       .add('tengman01', 'static/tengman01.json')
       .add('tengman02', 'static/tengman02.json')
       .add('first_person', 'static/first_person.json')
-      .add('static/q1_person_0.json')
-      .add('static/q1_person_1.json')
-      .add('static/q1_1.json')
-      .add('static/q1_2.json')
+      .add('q1_person_0', 'static/q1_person_0.json')
+      .add('q1_person_1', 'static/q1_person_1.json')
+      .add('q1_1', 'static/q1_1.json')
+      .add('q1_2', 'static/q1_2.json')
       .add('01_leaf1', 'static/01_leaf1.json')
       .add('01_leaf2', 'static/01_leaf2.json')
       .add('q2_leaf', 'static/q2_leaf.json')
@@ -120,6 +121,7 @@ class LongPoem {
           item.nameList.map(name => {
             let sp = Sprite.from(resources[item.filename].textures[name.name])
             name.prop && setSpriteProp(sp, name.prop);
+            name.id && (this.sprites[name.id] = sp);
             parent && this.sprites[parent].addChild(sp);
           })
         } else {
@@ -135,14 +137,29 @@ class LongPoem {
       } else if (type === 'animate') {
         let arr = [],
           boundary = item.boundary || item.range[1];
-        for (let n = item.range[0]; n < item.range[1]; n++) {
-          n < boundary ?
-            arr.push(resources[item.filename].textures[`${item.texture}${n}.png`]) :
-            arr.push(resources[item.filenameBoundary].textures[`${item.textureBoundary}${n}.png`]);
+        for (let i = item.range[0]; i < item.range[1]; i++) {
+          i < boundary ?
+            arr.push(resources[item.filename].textures[`${item.texture}${i}.png`]) :
+            arr.push(resources[item.filenameBoundary].textures[`${item.textureBoundary}${i}.png`]);
         }
         sprite = new AnimatedSprite(arr);
         sprite.animationSpeed = item.speed;
         item.autoPlay && sprite.play();
+      } else if (type === 'frame') {
+        this[item.arrName] = [];
+        for (var i = item.range[0]; i < item.range[1]; i++) {
+          let n = i < 10 && item.addZero ? `0${i}` : i,
+            boundary = item.boundary || item.range[1];
+          i < boundary ?
+            this[item.arrName].push(resources[item.filename].textures[`${item.texture}${n}.png`]) :
+            this[item.arrName].push(resources[item.filenameBoundary].textures[`${item.textureBoundary}${n}.png`])
+        }
+        sprite = new AnimatedSprite(this[item.arrName]);
+        item.onFrameChange && (sprite.onFrameChange = item.onFrameChange(this.sprites))
+        this[item.animateList].push({
+          ani: sprite,
+          ...item.frame
+        });
       }
       if (sprite) {
         id && (this.sprites[id] = sprite);
@@ -152,43 +169,6 @@ class LongPoem {
     })
 
     this.height < 1334 && this.setScale();
-
-    // 人物一动画
-    this.qPerson = [];
-    for (var i = 5; i < 72; i++) {
-      let n = i < 10 ? `0${i}` : i;
-      if (i < 40) {
-        this.qPerson.push(resources['static/q1_person_0.json'].textures[`a_000${n}.png`])
-      } else {
-        this.qPerson.push(resources['static/q1_person_1.json'].textures[`a_000${n}.png`])
-      }
-    }
-
-    this.animateStep1 = Sprite.from(resources['static/q1_2.json'].textures["q1_tengman_0.png"]);
-    this.animateStep1.y = 490;
-    this.animateStep2 = Sprite.from(resources['static/q1_2.json'].textures["q1_tengman_1.png"]);
-    this.animateStep2.y = 490;
-    this.animateStep2.visible = false;
-    this.animateStep1.visible = false;
-    let newAnimPerson1 = new AnimatedSprite(this.qPerson);
-    newAnimPerson1.y = 490;
-
-    this.animateList.push({
-      ani: newAnimPerson1,
-      startStamp: 475,
-      endStamp: 1214,
-      endFrame: 66
-    });
-    let _this = this;
-    newAnimPerson1.onFrameChange = function () {
-      35 < this.currentFrame && this.currentFrame <= 51 ? (_this.animateStep1.visible = true,
-        _this.animateStep2.visible = false) : 51 < this.currentFrame ? (_this.animateStep1.visible = false,
-        _this.animateStep2.visible = true) : (_this.animateStep2.visible = false,
-        _this.animateStep1.visible = false)
-    };
-
-    this.sprites.firstScene.addChild(this.animateStep1, this.animateStep2, newAnimPerson1);
-
     this.lineProp = renderLine(Container, things02, this.app.stage, Sprite, this.height);
 
     // 01-questions 
@@ -233,10 +213,10 @@ class LongPoem {
         box: Ae,
         resource: things02,
         img: questionOrnament.q1
-      }, Sprite)
+      }, Sprite, this.ze)
 
       for (var s = [], r = 0; r < 45; r++) {
-        s.push(resources['static/q1_1.json'].textures["a_000" + (r < 10 ? "0" + r : r) + ".png"]);
+        s.push(resources['q1_1'].textures["a_000" + (r < 10 ? "0" + r : r) + ".png"]);
       }
       var d = new AnimatedSprite(s);
       d.position.set(-70, -65),
@@ -250,12 +230,12 @@ class LongPoem {
         console.log('stop');
       }
       for (var c = [], u = 0; u < 60; u++)
-        c.push(resources['static/q1_2.json'].textures["C_000" + (u < 10 ? "0" + u : u) + ".png"]);
+        c.push(resources['q1_2'].textures["C_000" + (u < 10 ? "0" + u : u) + ".png"]);
       var m = new AnimatedSprite(c);
       m.position.set(-150, 30),
         m.animationSpeed = .3;
       for (var v = [], h = 0; h < 61; h++)
-        v.push(resources['static/q1_2.json'].textures["D_000" + (h < 10 ? "0" + h : h) + ".png"]);
+        v.push(resources['q1_2'].textures["D_000" + (h < 10 ? "0" + h : h) + ".png"]);
       var g = new AnimatedSprite(v);
       g.position.set(280, -120),
         g.animationSpeed = .3;
@@ -1251,6 +1231,46 @@ class LongPoem {
           4 !== this.scrollStep && this.questionStep(4) : 8800 < i && i <= 9500 &&
           5 !== this.scrollStep && this.questionStep(5);
         4200 < i && i <= 6e3 ? this.Te.smoke.alpha = Math.max((4500 - i) / 300, 0) : 2e3 < i && i <= 4200 && (this.Te.smoke.alpha = 1);
+      
+      
+        this.ze.forEach(function (e, t) {
+          if (e.data)
+            for (var a = 0; a < e.data.length; a++) {
+              var n = e.data[a];
+              if (n.pause)
+                break;
+              var o = (i - n.startStamp) / (n.endStamp - n.startStamp);
+              i < n.startStamp ? 0 == a && (n.start.x && (e.position.x = e.pivot.x + n.start.x),
+                n.start.y && (e.position.y = e.pivot.y + n.start.y),
+                n.start.rotation && (e.rotation = n.start.rotation),
+                n.start.alpha && (e.alpha = n.start.alpha),
+                n.start.scale && e.scale.set(n.start.scale),
+                n.start.scale3d && e.scale3d.set(n.start.scale3d),
+                n.start.hidden && (e.visible = !1),
+                e.withScroll && e.gotoAndStop(0),
+                e.isAuto && (e.gotoAndPlay(0),
+                  e.stopped = !1)) : i >= n.startStamp && i <= n.endStamp ? (n.start.x && (e.position.x = e.pivot.x + n.start.x + o * (n.end.x - n.start.x)),
+                n.start.y && (e.position.y = e.pivot.y + n.start.y + o * (n.end.y - n.start.y)),
+                n.start.rotation && (e.rotation = n.start.rotation + o * (n.end.rotation - n.start.rotation)),
+                n.start.alpha && (e.alpha = n.start.alpha + o * (n.end.alpha - n.start.alpha)),
+                n.start.scale && e.scale.set(n.start.scale + o * (n.end.scale - n.start.scale)),
+                n.start.scale3d && e.scale3d.set(n.start.scale3d + o * (n.end.scale3d - n.start.scale3d)),
+                e.withScroll && e.gotoAndStop(o * (e.totalFrames - 1)),
+                e.isAuto && 1 == e.stopped && (e.gotoAndPlay(0),
+                  e.stopped = !1),
+                n.start.hidden && (e.visible = !0),
+                n.end.hidden && (e.visible = !0)) : a == e.data.length - 1 && (n.start.x && (e.position.x = e.pivot.x + n.end.x),
+                n.start.y && (e.position.y = e.pivot.y + n.end.y),
+                n.start.rotation && (e.rotation = n.end.rotation),
+                n.start.alpha && (e.alpha = n.end.alpha),
+                n.start.scale && e.scale.set(n.end.scale),
+                n.start.scale3d && e.scale3d.set(n.end.scale3d),
+                n.end.hidden && (e.visible = !1),
+                e.withScroll && e.gotoAndStop(e.totalFrames - 1),
+                e.isAuto && (e.gotoAndStop(0),
+                  e.stopped = !0))
+            }
+        })
       }
     })
   }

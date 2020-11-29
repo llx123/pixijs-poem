@@ -2,6 +2,9 @@ import {
   renderBg,
   renderDot
 } from './util-render-func';
+import {
+  personFrameChange
+} from './frame-change'
 
 let height = window.innerHeight;
 
@@ -132,7 +135,7 @@ export const sceneList = [{
     parent: 'firstScene',
     type: 'animate',
     filename: 'first_person',
-    range: [0,76],
+    range: [0, 76],
     autoPlay: true,
     texture: 'a_000',
     speed: .4,
@@ -146,11 +149,54 @@ export const sceneList = [{
     type: 'animate',
     filename: 'tengman01',
     filenameBoundary: 'tengman02',
-    range: [0,60],
+    range: [0, 60],
     boundary: 30,
     autoPlay: true,
     texture: 'tengman_000',
     textureBoundary: 'tengman_000',
     speed: .4
+  },
+  {
+    id: 'newAnimPerson1',
+    parent: 'firstScene',
+    type: 'frame',
+    arrName: 'qPerson',
+    filename: 'q1_person_0',
+    animateList: 'animateList',
+    filenameBoundary: 'q1_person_1',
+    texture: 'a_000',
+    textureBoundary: 'a_000',
+    range: [5, 72],
+    boundary: 40,
+    addZero: true,
+    frame: {
+      startStamp: 475,
+      endStamp: 1214,
+      endFrame: 66
+    },
+    prop: {
+      y: 490
+    },
+    onFrameChange: personFrameChange
+  },
+  {
+    parent: 'firstScene',
+    type: 'sprite',
+    filename: 'q1_2',
+    nameList: [{
+      id: 'animateStep1',
+      name: "q1_tengman_0.png",
+      prop: {
+        y: 490,
+        visible: false
+      }
+    }, {
+      id: 'animateStep2',
+      name: "q1_tengman_1.png",
+      prop: {
+        y: 490,
+        visible: false
+      }
+    }]
   }
 ]
